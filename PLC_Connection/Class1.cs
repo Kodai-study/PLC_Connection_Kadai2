@@ -8,19 +8,27 @@ using MITSUBISHI.Component;
 
 namespace PLC_Connection
 {
-   class Class1
+    class Class1
     {
         public static void Main()
         {
             DotUtlType dotUtlType = new DotUtlType();
             dotUtlType.ActLogicalStationNumber = 1;
-            int code = dotUtlType.Open();
+            int open = dotUtlType.Open();
 
-            
-            string rabel = "Test";
-            var buff = new int[8];
-            dotUtlType.ReadDeviceBlock(ref rabel, 8, ref buff);
+
+            string rabel = "テスト";
+            var buff = new int[2];
+            int read = dotUtlType.ReadDeviceBlock(ref rabel,2, ref buff);
             Console.WriteLine(buff);
+
+            rabel = "Test5";
+            int device = 5;
+            read = dotUtlType.GetDevice(ref rabel, ref device);
+
+            rabel = "OutTest";
+            read = dotUtlType.GetDevice(ref rabel, ref device);
+            Console.WriteLine(device);
         }
     }
 }
