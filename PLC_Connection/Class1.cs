@@ -12,8 +12,15 @@ namespace PLC_Connection
     {
         public static void Main()
         {
-            DotUtlType dotUtlType = new DotUtlType() { ActLogicalStationNumber = 1 };
-            dotUtlType.Open();
+            DotUtlType dotUtlType = new DotUtlType();
+            dotUtlType.ActLogicalStationNumber = 1;
+            int code = dotUtlType.Open();
+
+            
+            string rabel = "Test";
+            var buff = new int[8];
+            dotUtlType.ReadDeviceBlock(ref rabel, 8, ref buff);
+            Console.WriteLine(buff);
         }
     }
 }
