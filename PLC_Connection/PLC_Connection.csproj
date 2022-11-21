@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="LogicCtrl.cs" />
     <Compile Include="Class1.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +75,7 @@
     <Reference Include="MITSUBISHI.Component.DotSupportMsg, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5d8f6a8a93196d7a, processorArchitecture=x86" />
     <Reference Include="MITSUBISHI.Component.DotUtlType, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6b44489e63a9c4bd, processorArchitecture=x86" />
     <Reference Include="System" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
