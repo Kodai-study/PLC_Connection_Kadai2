@@ -19,10 +19,10 @@ namespace PLC_Connection
         {
             var logicCtrl = new LogicCtrl();
             int errCode = 0;
+            logicCtrl.a();
 
-
-            if (logicCtrl.waitTrigger("テスティング", ref errCode))
-                ConnectDB();
+           // if (logicCtrl.waitTrigger("Test5", ref errCode))
+           ConnectDB();
         }
 
 
@@ -30,8 +30,8 @@ namespace PLC_Connection
         {
             SqlConnection a = new SqlConnection("Data Source=RBPC12;Initial Catalog=Robot22_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
             a.Open();
-
-            string cmd = String.Format("INSERT INTO PLC_Test (Time) VALUES ({0})", DateTime.Now);
+            var nowTime = DateTime.Now;
+            string cmd = String.Format("INSERT INTO PLC_Test (Time) VALUES ('{0}.{1:D3}')", e,4);
             using (var command = new SqlCommand(cmd, a))
                 command.ExecuteNonQuery();
         }
