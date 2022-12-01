@@ -23,10 +23,24 @@ namespace PLC_Connection
             logicCtrl.a();
 
             ConnectDB();
-            */
-
             var reader = new Net_test();
             reader.loop();
+            */
+
+            var e = new PLC_MonitorTask();
+            var task = e.Start();
+            Thread.Sleep(5000);
+            //task.Wait();
+            //e.stop();
+            bool IsSuccess = task.Result;
+            if (IsSuccess)
+            {
+                Console.WriteLine("正常終了");
+            }
+            else
+            {
+                Console.WriteLine("異常終了");
+            }
         }
      
 
