@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="net_test.cs" />
     <Compile Include="LogicCtrl.cs" />
     <Compile Include="Class1.cs" />
   </ItemGroup>

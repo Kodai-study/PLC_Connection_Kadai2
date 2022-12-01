@@ -17,21 +17,25 @@ namespace PLC_Connection
         public DotUtlType dotUtlType;
         public static void Main()
         {
+            /*
             var logicCtrl = new LogicCtrl();
             int errCode = 0;
             logicCtrl.a();
 
-           // if (logicCtrl.waitTrigger("Test5", ref errCode))
-           ConnectDB();
-        }
+            ConnectDB();
+            */
 
+            var reader = new Net_test();
+            reader.loop();
+        }
+     
 
         static void ConnectDB()
         {
             SqlConnection a = new SqlConnection("Data Source=RBPC12;Initial Catalog=Robot22_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
             a.Open();
             var nowTime = DateTime.Now;
-            string cmd = String.Format("INSERT INTO PLC_Test (Time) VALUES ('{0}.{1:D3}')", e,4);
+            string cmd = String.Format("INSERT INTO PLC_Test (Time) VALUES ('{0}.{1:D3}')", nowTime, nowTime.Millisecond);
             using (var command = new SqlCommand(cmd, a))
                 command.ExecuteNonQuery();
         }

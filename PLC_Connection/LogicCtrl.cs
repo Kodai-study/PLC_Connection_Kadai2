@@ -9,11 +9,16 @@ using System.Threading.Tasks;
 using MITSUBISHI.Component;
 using System.Data.SqlClient;
 using ActUtlTypeLib;
+using System.Runtime.CompilerServices;
+using System.Reflection.Emit;
 
 namespace PLC_Connection
 {
     class LogicCtrl
     {
+        private CancellationTokenSource cansellToken;
+        public string[] waitLabels = new string[] { "Test5", "テスト" };
+
         private DotUtlType dotUtlType;
         public void a()
         {
@@ -34,11 +39,24 @@ namespace PLC_Connection
             rabel = "OutTest";
             read = dotUtlType.GetDevice(ref rabel, ref device);
             // Console.WriteLine(device);
+            cansellToken = new CancellationTokenSource();
 
+            Console.WriteLine("スタート");
+            int data = 0;
+            while (!cansellToken.IsCancellationRequested)
+            {
+                foreach (var e in this.waitLabels)
+                {
+                    var cp = e;
+                    //dotUtlType.GetDevice(ref cp, ref data);
+                }
+                Console.WriteLine("hoge");
+                Thread.Sleep(1000);
+            }
         }
 
 
-        public bool waitTrigger(string rabel,ref int code)
+        public bool waitTrigger(string rabel, ref int code)
         {
             int device = 0;
             int count = 0;
@@ -61,5 +79,22 @@ namespace PLC_Connection
             }
             return false;
         }
+
+        private void Run()
+        {
+            Console.WriteLine("スタート");
+            int data = 0;
+            while (!cansellToken.IsCancellationRequested)
+            {
+                foreach (var e in this.waitLabels)
+                {
+                    var cp = e;
+                    //dotUtlType.GetDevice(ref cp, ref data);
+                }
+                Console.WriteLine("hoge");
+                Thread.Sleep(1);
+            }
+        }
+
     }
 }
