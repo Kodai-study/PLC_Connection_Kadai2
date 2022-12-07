@@ -17,6 +17,9 @@ namespace PLC_Connection
 {
     class PLC_MonitorTask
     {
+        /// <summary>
+        ///  PLCのデータを読み込むに、コネクションを確立するオブジェクト
+        /// </summary>
         public DotUtlType dotUtlType;
 
         /// <summary>
@@ -29,8 +32,15 @@ namespace PLC_Connection
         /// </summary>
         SqlConnection sqlConnection;
 
+        /// <summary>
+        ///  ステーション内のワークを管理するオブジェクト
+        /// </summary>
         WorkController workController;
 
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> Start()
         {
             this.cancellToken = new CancellationTokenSource();
@@ -43,32 +53,42 @@ namespace PLC_Connection
             sqlConnection = new SqlConnection("Data Source=RBPC12;Initial Catalog=Robot22_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
             sqlConnection.Open();
             await Task.Run(() => Run(cancellToken));
+            //TODO 処理が正常終了、異常終了の定義をちゃんとする
             return false;
         }
 
+        /// <summary>
+        ///  ポーリングで、PLCの値をチェックするタスク。
+        /// </summary>
+        /// <param name="token"> 
+        ///  このトークンに対してキャンセル命令をかけることで
+        ///  ループが終了する。
+        /// </param>
+        /// <see cref="PLC_MonitorTask.cancellToken"/>
         public void Run(CancellationTokenSource token)
         {
             bool dbWrite = false;
-            int[] datas = new int[1];
-            string label = "shine";
-            Console.WriteLine("ThreadProc start.");
+            int[] datas = new int[1];   //PLCから読み取った値をブロックで格納しておく
+            string label = "shine";     
+            Console.WriteLine("PLCの読み取り開始");
+
+            /* プログラム最初に値を読み取って、そこからの変化を見る */
             int read = dotUtlType.ReadDeviceBlock(ref label, 1, ref datas);
             int old_data = datas[0];
-            Task<bool> dbWriteTask = null;
-
+            Task<bool> dbWriteTask = null;      //データベースへの書き込みタスク。
 
             while (true)
             {
+                //TODO ブロック読み取りの時にマスクをかける
                 read = dotUtlType.ReadDeviceBlock(ref label, 1, ref datas);
                 if (old_data != datas[0])
                 {
                     DateTime dateTime = DateTime.Now;
                     int diff = datas[0] ^ old_data;
                     old_data= datas[0];
-                    dbWriteTask = Task.Run(() => writedata(dateTime, diff, datas[0]));
+                    dbWriteTask = Task.Run(() => Writedata(dateTime, diff, datas[0]));
                     dbWrite = true;
                 }
-
 
                 // キャンセル要求
                 if (token.IsCancellationRequested)
@@ -80,7 +100,7 @@ namespace PLC_Connection
 
                 if (dbWrite)
                 {
-                    Console.WriteLine(dbWriteTask.Result);
+                    //Console.WriteLine(dbWriteTask.Result);
                     dbWrite = false;
                 }
             }
@@ -90,9 +110,9 @@ namespace PLC_Connection
         ///  サンプルで、触れたセンサ値(Xﾗﾍﾞﾙ)の種類と、
         ///  触れたか離れたかの値をデータベースに入力
         /// </summary>
-        /// <param name="nowTime">  </param>
-        /// <param name="changeBit"></param>
-        /// <param name="sensorData"></param>
+        /// <param name="reactTime"> 変化を検知した時刻 </param>
+        /// <param name="changeBit"> 変化していたビット </param>
+        /// <param name="sensorData"> 変化していた値の元の値 </param>
         /// <returns></returns>
         public bool Task_WriteDB(DateTime nowTime, int changeBit, int sensorData)
         {
@@ -101,7 +121,7 @@ namespace PLC_Connection
                 int sensorNum = 0;
                 int on_off = (changeBit & sensorData) != 0 ? 1 : 0;
 
-                for (; changeBit != 0; changeBit >>= 1, sensorNum++) {; }
+                for (; changeBit != 0; changeBit >>= 1, sensorNum++) { ; }
 
                 string cmd = String.Format("INSERT INTO PLC_Test (Time,sensor_Number,ON_OFF) VALUES ('{0}.{1:D3}' , {2} , {3})", nowTime, nowTime.Millisecond, sensorNum, on_off);
                 using (var command = new SqlCommand(cmd, sqlConnection))
@@ -121,13 +141,14 @@ namespace PLC_Connection
         /// <param name="reactTime"> 変化を検知した時刻 </param>
         /// <param name="changeBit"> 変化していたビット </param>
         /// <param name="sensorData"> 変化していた値の元の値 </param>
-        /// <returns></returns>
-        public bool writedata(DateTime reactTime, int changeBit, int sensorData)
+        /// <returns> 書き込みを行ったらTrue </returns>
+        
+        //TODO 書き込みが失敗した場合はreturn falseとは違う処理を行うようにする
+        public bool Writedata(DateTime reactTime, int changeBit, int sensorData)
         {
-
             bool ChangeON = (changeBit & sensorData) != 0;  //変化したビットが、1に変化したか(true)
-            string sql = null;
-            int progressNum = -1;       //行われた変化
+            string sql = null;          //INSERT、UPDATEいずれかのSQL文
+            int progressNum = -1;       //工程が進んだ場合、その工程番号
 
             try
             {
@@ -137,10 +158,15 @@ namespace PLC_Connection
                     return false;
                 }
 
+                ///DEBUG パワポ出すためのデバッグコード
+                Console.WriteLine("工程 {0} が完了、時刻 : {1}", progressNum, reactTime.TimeOfDay);
+
+                /* ワーク搬入工程が行われたとき、INSERT文で新しくワーク情報を追加する */
                 if (progressNum == 0)
                 {
                     sql = workController.AddnewWork(reactTime);
                 }
+                /* それ以外の工程が行われたとき、UPDATE文でワーク情報を更新 */
                 else if (progressNum > 0)
                 {
                     sql = workController.ProcessToSql(progressNum, reactTime.TimeOfDay);
@@ -148,18 +174,13 @@ namespace PLC_Connection
                 using (var command = new SqlCommand(sql, sqlConnection))
                     command.ExecuteNonQuery();
             }
+            //TODO SQL実行が失敗したときの処理を書く。エラーログへの書き込み、再実行?
             catch (Exception e)
             {
+                Console.WriteLine(e.ToString());
                 return false;
             }
             return true;
-        }
-
-        public void hoge()
-        {
-            string label = "wordSample";
-            int data = 0;
-            dotUtlType.GetDevice(ref label, ref data);
         }
 
         /// <summary>
@@ -175,7 +196,6 @@ namespace PLC_Connection
 
     /// <summary>
     ///  検査ステーションに入ってきたワークの管理を行う
-    ///  
     /// </summary>
     class WorkController
     {
@@ -189,23 +209,34 @@ namespace PLC_Connection
             t = new Queue<WorkData>();
         }
 
+        /// <summary>
+        ///  行われた変更から、ワーク情報を更新するSQL文を作成
+        /// </summary>
+        /// <param name="progressNum"> 工程番号。Parameterクラスからとってくる </param>
+        /// <see cref="Parameters.Bit_X.getProgressNum(int, bool, ref int)"/>
+        /// <param name="nowTime"> センサが反応した時刻 </param>
+        /// <returns> 作成したUPDATE文 </returns>
+        /// TODO エラー時の返り値等を決めておく
+
         public string ProcessToSql(int progressNum, TimeSpan nowTime)
         {
             string sql = null;
+            /* 搬出工程が行われたら、管理キューから1つ破棄する */ 
             if (progressNum == 9)
             {
-                sql = String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in = {2}",
+                sql = String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in LIKE CONVERT(DATETIME, '{2}')",
                     "Carry_out", nowTime, t.Dequeue().startTime);
             }
             else
             {
+                /* その工程がまだ行われていない、最も古い */
                 foreach (var e in t)
                 {
                     if (progressNum > e.progressNum)
                     {
                         e.progressNum = progressNum;
-                        sql = String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in = {2}",
-                        Parameters.TIME_COLUMNAMES[progressNum], nowTime, t.Dequeue().startTime);
+                        sql = String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in LIKE CONVERT(DATETIME, '{2}')",
+                        Parameters.TIME_COLUMNAMES[progressNum], nowTime, t.Peek().startTime);
                     }
                 }
             }
@@ -228,7 +259,13 @@ namespace PLC_Connection
         /// </summary>
         class WorkData
         {
+            /// <summary>
+            ///  ワークが最後に行った工程の番号
+            /// </summary>
             public int progressNum;
+            /// <summary>
+            ///  ワークが搬入されてきた時間。これでテーブル操作の時にワークを識別する。
+            /// </summary>
             public DateTime startTime;
             public WorkData(DateTime startTime, int progressNum)
             {
@@ -239,12 +276,5 @@ namespace PLC_Connection
     }
 }
 
-class WorkStatus
-{
-    public int status;
-    Queue<int> workQueue;
-    public WorkStatus()
-    {
-        workQueue = new Queue<int>();
-    }
-}
+
+//TODO IO割付のRtoPLCを見て、X411を読み取る。 配列のサイズを10にしてブロックで読めるか確認する

@@ -12,6 +12,9 @@ using ActUtlTypeLib;
 
 namespace PLC_Connection
 {
+    /// <summary>
+    ///  メイン実行のクラス
+    /// </summary>
     class Class1
     {
         public DotUtlType dotUtlType;
