@@ -18,6 +18,13 @@ namespace PLC_Connection
     class PLC_MonitorTask
     {
         /// <summary>
+        ///  チャタリング防止として、前のセンサ読み込みから
+        ///  この時間がたつまでは読み込みを無視する。
+        ///  1秒
+        /// </summary>
+        private readonly TimeSpan Chataring_time = new TimeSpan(0, 0, 1);
+
+        /// <summary>
         ///  PLCのデータを読み込むに、コネクションを確立するオブジェクト
         /// </summary>
         public DotUtlType dotUtlType;
@@ -38,6 +45,11 @@ namespace PLC_Connection
         WorkController workController;
 
         /// <summary>
+        ///  DEBUG 最後に工程が終了した時間の一覧を記録しておく
+        /// </summary>
+        DateTime[] processTimeStanps;
+
+        /// <summary>
         ///  
         /// </summary>
         /// <returns></returns>
@@ -51,7 +63,17 @@ namespace PLC_Connection
                 return false;
 
             sqlConnection = new SqlConnection("Data Source=RBPC12;Initial Catalog=Robot22_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-            sqlConnection.Open();
+            try
+            {
+                sqlConnection.Open();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                dotUtlType.Close();
+                return false;
+            }
+            processTimeStanps = new DateTime[Parameters.StepNumbers];
             await Task.Run(() => Run(cancellToken));
             //TODO 処理が正常終了、異常終了の定義をちゃんとする
             return false;
@@ -161,6 +183,15 @@ namespace PLC_Connection
                 ///DEBUG パワポ出すためのデバッグコード
                 Console.WriteLine("工程 {0} が完了、時刻 : {1}", progressNum, reactTime.TimeOfDay);
 
+                TimeSpan diffReactTime = reactTime - processTimeStanps[progressNum];
+                processTimeStanps[progressNum] = reactTime;
+
+                /* 連続してセンサ入力がされたときは、無視する */
+                if (diffReactTime < Chataring_time)
+                {
+                    return false;
+                }
+
                 /* ワーク搬入工程が行われたとき、INSERT文で新しくワーク情報を追加する */
                 if (progressNum == 0)
                 {
@@ -221,22 +252,25 @@ namespace PLC_Connection
         public string ProcessToSql(int progressNum, TimeSpan nowTime)
         {
             string sql = null;
-            /* 搬出工程が行われたら、管理キューから1つ破棄する */ 
+            /* 搬出工程が行われたら、管理キューから1つ破棄する */
             if (progressNum == 9)
             {
-                sql = String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in LIKE CONVERT(DATETIME, '{2}')",
-                    "Carry_out", nowTime, t.Dequeue().startTime);
+                var StartTime = t.Dequeue().startTime;
+                sql = String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in BETWEEN '{2}' AND '{3}'",
+                    "Carry_out", nowTime, StartTime, StartTime + TimeSpan.FromSeconds(1));
             }
             else
             {
-                /* その工程がまだ行われていない、最も古い */
+                /* その工程がまだ行われていない、最も古いワークに変更を加える */
                 foreach (var e in t)
                 {
                     if (progressNum > e.progressNum)
                     {
                         e.progressNum = progressNum;
-                        sql = String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in LIKE CONVERT(DATETIME, '{2}')",
-                        Parameters.TIME_COLUMNAMES[progressNum], nowTime, t.Peek().startTime);
+                        sql = String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in BETWEEN '{2}' AND '{3}'",
+                        Parameters.TIME_COLUMNAMES[progressNum], nowTime, e.startTime, e.startTime + TimeSpan.FromSeconds(1));
+                        Console.WriteLine(sql);
+                        break;
                     }
                 }
             }
