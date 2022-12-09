@@ -83,7 +83,6 @@ namespace PLC_Connection
         private void Run()
         {
             Console.WriteLine("スタート");
-            int data = 0;
             while (!cansellToken.IsCancellationRequested)
             {
                 foreach (var e in this.waitLabels)
@@ -95,6 +94,5 @@ namespace PLC_Connection
                 Thread.Sleep(1);
             }
         }
-
     }
 }

@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MITSUBISHI.Component;
 using System.Data.SqlClient;
-using ActUtlTypeLib;
 using System.Data;
 using System.Reflection.Emit;
 using System.Collections;
@@ -97,6 +96,9 @@ namespace PLC_Connection
             /* プログラム最初に値を読み取って、そこからの変化を見る */
             int read = dotUtlType.ReadDeviceBlock(ref label, 1, ref datas);
             int old_data = datas[0];
+            label = "Result";
+            read = dotUtlType.ReadDeviceBlock(ref label, 1, ref datas);
+            label = "shine";
             Task<bool> dbWriteTask = null;      //データベースへの書き込みタスク。
 
             while (true)
@@ -180,17 +182,18 @@ namespace PLC_Connection
                     return false;
                 }
 
-                ///DEBUG パワポ出すためのデバッグコード
-                Console.WriteLine("工程 {0} が完了、時刻 : {1}", progressNum, reactTime.TimeOfDay);
-
+                /* 前回センサが反応した時間からどれだけ時間がたったか */
                 TimeSpan diffReactTime = reactTime - processTimeStanps[progressNum];
                 processTimeStanps[progressNum] = reactTime;
 
-                /* 連続してセンサ入力がされたときは、無視する */
+                /* 工程が進む入力は、前の入力よりChataring_time(定数)以上遅れていた時のみ反応する */
                 if (diffReactTime < Chataring_time)
                 {
                     return false;
                 }
+
+                ///DEBUG パワポ出すためのデバッグコード
+                Console.WriteLine("工程 {0} が完了、時刻 : {1}", progressNum, reactTime.TimeOfDay);
 
                 /* ワーク搬入工程が行われたとき、INSERT文で新しくワーク情報を追加する */
                 if (progressNum == 0)

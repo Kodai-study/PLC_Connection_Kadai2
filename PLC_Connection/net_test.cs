@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MITSUBISHI.Component;
 using System.Data.SqlClient;
-using ActUtlTypeLib;
 using System.Reflection.Emit;
 
 namespace PLC_Connection

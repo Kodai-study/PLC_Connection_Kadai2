@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="ResultDatas.cs" />
     <Compile Include="Parameters.cs" />
     <Compile Include="PLC_monitorTask.cs" />
     <Compile Include="net_test.cs" />
