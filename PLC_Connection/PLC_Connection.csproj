@@ -60,8 +60,6 @@
     <Compile Include="ResultDatas.cs" />
     <Compile Include="Parameters.cs" />
     <Compile Include="PLC_monitorTask.cs" />
-    <Compile Include="net_test.cs" />
-    <Compile Include="LogicCtrl.cs" />
     <Compile Include="Class1.cs" />
   </ItemGroup>
   <ItemGroup>

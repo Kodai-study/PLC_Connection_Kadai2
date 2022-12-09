@@ -316,8 +316,6 @@ namespace PLC_Connection
             }
         }
 
-
-
     }
 }
 

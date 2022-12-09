@@ -42,7 +42,6 @@ namespace PLC_Connection
 #endif
         }
      
-
         static void ConnectDB()
         {
             SqlConnection a = new SqlConnection("Data Source=RBPC12;Initial Catalog=Robot22_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
@@ -77,14 +76,12 @@ namespace PLC_Connection
             x44.checkResults(ref result, resultDatas[3]);
 
             /*
-                         read = dotUtlType.Open();
+            read = dotUtlType.Open();
             string resultRabel = "Result";
             read = dotUtlType.ReadDeviceBlock(ref resultRabel, 1, ref resultDatas);
             resultRabel = "ResultBlock";
             read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
              */
-
-
         }
 
         //DEBUG 結果が入るところでサンプルのデータを入れる関数
