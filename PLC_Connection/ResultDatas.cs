@@ -25,6 +25,14 @@ namespace ResultDatas
     /// </summary>
     public class Results
     {
+        public Results() {
+            ic = new IC();
+            work = new WORK();
+            dipSwitch = new DIP_SW();
+            transister = new TR();
+            batterySocket = new BAT_SOCKET();
+            diode = new DIODE();
+        }
         public IC ic;
         public WORK work;
         public TR transister;
@@ -34,6 +42,7 @@ namespace ResultDatas
     }
     public class IC
     {
+        public IC() { }
         public IC(CHECK_RESULT IC1_OK, CHECK_RESULT IC1_DIR, CHECK_RESULT IC2_OK, CHECK_RESULT IC2_DIR)
         {
             this.IC1_OK = IC1_OK;
@@ -48,6 +57,7 @@ namespace ResultDatas
     }
     public class WORK
     {
+        public WORK() { }
         public WORK(CHECK_RESULT WORK_OK, CHECK_RESULT WORK_DIR)
         {
             this.WORK_OK = WORK_OK;
@@ -58,6 +68,7 @@ namespace ResultDatas
     }
     public class TR
     {
+        public TR() { }
         public TR(CHECK_RESULT TR_OK)
         {
             this.TR_OK = TR_OK;
@@ -66,6 +77,7 @@ namespace ResultDatas
     }
     public class DIP_SW
     {
+        public DIP_SW() { }
         public DIP_SW(CHECK_RESULT DIP_OK,int DIP_PATTERN)
         {
             this.DIP_OK = DIP_OK;
@@ -76,6 +88,7 @@ namespace ResultDatas
     }
     public class BAT_SOCKET
     {
+        public BAT_SOCKET() { }
         public BAT_SOCKET(CHECK_RESULT SOCKET_DIR)
         {
             this.SOCKET_DIR = SOCKET_DIR;
@@ -84,6 +97,7 @@ namespace ResultDatas
     }
     public class DIODE
     {
+        public DIODE() { }
         public DIODE(CHECK_RESULT DIODE_DIR)
         {
             this.DIODE_DIR = DIODE_DIR;

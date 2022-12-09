@@ -135,7 +135,7 @@ namespace PLC_Connection
             /// <summary>
             ///  読み取ったブロック
             /// </summary>
-            protected abstract int MASK { get; }
+            public abstract int MASK { get; }
             /// <summary>
             ///  読み取れたビットブロックから、検査結果を読み取る。
             /// </summary>
@@ -168,7 +168,7 @@ namespace PLC_Connection
             public const int IC1_DIR = 0b0001000000000000;
 
             //TODO MASKの実装
-            protected override int MASK
+            public override int MASK
             {
                 get
                 {
@@ -184,7 +184,7 @@ namespace PLC_Connection
                     checkResults.work.WORK_OK = CHECK_RESULT.NG;
 
                 if ((bitData & WORK_DIR_OK) != 0)
-                    checkResults.work.WORK_DIR = CHECK_RESULT.NG;
+                    checkResults.work.WORK_DIR = CHECK_RESULT.OK;
                 else if ((bitData & WORK_DIR_NG) != 0)
                     checkResults.work.WORK_DIR = CHECK_RESULT.NG;
                 else
@@ -210,7 +210,7 @@ namespace PLC_Connection
             /// <summary> トランジスタが正常だった時に立つビット </summary>
             public const int TR_OK = 0b1000000000000000;
 
-            protected override int MASK
+            public override int MASK
             {
                 get { return IC2_OK | IC2_DIR | TR_OK; }
             }
@@ -244,7 +244,7 @@ namespace PLC_Connection
             /// <summary> DIPスイッチの値が合格だった時に立つビット </summary>
             public const int DIP_OK = 0b0000001000000000;
 
-            protected override int MASK
+            public override int MASK
             {
                 get
                 {
@@ -279,7 +279,7 @@ namespace PLC_Connection
             /// <summary> ダイオードの向きが正しかった時に立つビット </summary>
             public const int DIODE_DIR = 0b0010000000000000;
 
-            protected override int MASK
+            public override int MASK
             {
                 get
                 {

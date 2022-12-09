@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define debug 
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -20,16 +22,9 @@ namespace PLC_Connection
         public DotUtlType dotUtlType;
         public static void Main()
         {
-            /*
-            var logicCtrl = new LogicCtrl();
-            int errCode = 0;
-            logicCtrl.a();
-
-            ConnectDB();
-            var reader = new Net_test();
-            reader.loop();
-            */
-
+#if debug
+            debug();
+#else
             var e = new PLC_MonitorTask();
             var task = e.Start();
             Thread.Sleep(5000);
@@ -44,6 +39,7 @@ namespace PLC_Connection
             {
                 Console.WriteLine("異常終了");
             }
+#endif
         }
      
 
@@ -55,6 +51,58 @@ namespace PLC_Connection
             string cmd = String.Format("INSERT INTO PLC_Test (Time) VALUES ('{0}.{1:D3}')", nowTime, nowTime.Millisecond);
             using (var command = new SqlCommand(cmd, a))
                 command.ExecuteNonQuery();
+        }
+
+        static void debug()
+        {
+            int read;
+            int[] resultDatas = new int[4];
+            Parameters.BITS_STATUS x41 = new Parameters.BITS_X41();
+            Parameters.BITS_STATUS x42 = new Parameters.BITS_X42();
+            Parameters.BITS_STATUS x43 = new Parameters.BITS_X43();
+            Parameters.BITS_STATUS x44 = new Parameters.BITS_X44();
+            var result = new ResultDatas.Results();
+            for(int i = 0;i < resultDatas.Length; i++)
+            {
+                resultDatas[i] = -1;
+            }
+            DotUtlType dotUtlType = new DotUtlType();
+            dotUtlType.ActLogicalStationNumber = 401;
+
+            InputSampleResultData(resultDatas);
+
+            x41.checkResults(ref result, resultDatas[0]);
+            x42.checkResults(ref result, resultDatas[1]);
+            x43.checkResults(ref result, resultDatas[2]);
+            x44.checkResults(ref result, resultDatas[3]);
+
+            /*
+                         read = dotUtlType.Open();
+            string resultRabel = "Result";
+            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 1, ref resultDatas);
+            resultRabel = "ResultBlock";
+            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
+             */
+
+
+        }
+
+        //DEBUG 結果が入るところでサンプルのデータを入れる関数
+        static void InputSampleResultData(int[] datas)
+        {
+            if (datas.Length != 4)
+            {
+                Console.WriteLine("配列サイズが違う");
+                return;
+            }
+            Parameters.BITS_STATUS x41 = new Parameters.BITS_X41();
+            Parameters.BITS_STATUS x42 = new Parameters.BITS_X42();
+            Parameters.BITS_STATUS x43 = new Parameters.BITS_X43();
+            Parameters.BITS_STATUS x44 = new Parameters.BITS_X44();
+            datas[0] = x41.MASK & (~Parameters.BITS_X41.WORK_DIR_NG);
+            datas[1] = x42.MASK;
+            datas[2] = x43.MASK;
+            datas[3] = x44.MASK;
         }
     }
 }

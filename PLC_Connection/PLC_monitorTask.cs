@@ -96,6 +96,7 @@ namespace PLC_Connection
             /* プログラム最初に値を読み取って、そこからの変化を見る */
             int read = dotUtlType.ReadDeviceBlock(ref label, 1, ref datas);
             int old_data = datas[0];
+            int[] resultDatas = new int[4];
             label = "Result";
             read = dotUtlType.ReadDeviceBlock(ref label, 1, ref datas);
             label = "shine";
@@ -113,6 +114,10 @@ namespace PLC_Connection
                     dbWriteTask = Task.Run(() => Writedata(dateTime, diff, datas[0]));
                     dbWrite = true;
                 }
+                string resultRabel = "Result";
+                read = dotUtlType.ReadDeviceBlock(ref resultRabel, 1, ref resultDatas);
+                resultRabel = "ResultBlock";
+                read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
 
                 // キャンセル要求
                 if (token.IsCancellationRequested)
@@ -310,6 +315,9 @@ namespace PLC_Connection
                 this.startTime = startTime;
             }
         }
+
+
+
     }
 }
 
