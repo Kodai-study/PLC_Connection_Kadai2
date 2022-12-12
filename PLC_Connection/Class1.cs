@@ -49,6 +49,7 @@ namespace PLC_Connection
         {
             int read;
             int oldX40;
+            int count = 1;
             int[] resultDatas = new int[4];
             int[] processBits = new int[1];
 
@@ -88,11 +89,16 @@ namespace PLC_Connection
                 read = dotUtlType.ReadDeviceBlock(ref ProcessLabel, 1, ref processBits);
                 int x0_data = processBits[0] & x40.MASK;
 
-                if (oldX40 != x0_data && (x0_data & Parameters.BITs_X40.END_SHOOT) != 0)
+                if (oldX40 != x0_data)
                 {
+                    oldX40 = x0_data;
+                    if((x0_data & Parameters.BITs_X40.END_SHOOT) == 0)
+                    {
+                        continue;
+                    }
                     DateTime dateTime = DateTime.Now;
                     int diff = x0_data ^ oldX40;
-                    oldX40 = x0_data;
+                    
 
                     read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
 
@@ -101,13 +107,7 @@ namespace PLC_Connection
                         resultBlocks[i].CheckResult(ref result, resultDatas[i]);
                     }
 
-                    /*
-                    x41.CheckResult(ref result, resultDatas[0]);
-                    x42.CheckResult(ref result, resultDatas[1]);
-                    x43.CheckResult(ref result, resultDatas[2]);
-                    x44.CheckResult(ref result, resultDatas[3]);
-                    */
-                    Console.WriteLine(result);
+                    Console.WriteLine("{0}個目　　　\n{1}", count, result);
                     //  break;
                 }
                 Thread.Sleep(2);

@@ -278,7 +278,7 @@ namespace PLC_Connection
                         e.progressNum = progressNum;
                         sql = String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in BETWEEN '{2}' AND '{3}'",
                         Parameters.TIME_COLUMNAMES[progressNum], nowTime, e.startTime, e.startTime + TimeSpan.FromSeconds(1));
-                        Console.WriteLine(sql);
+                        Console.WriteLine(sql + "\n");
                         break;
                     }
                 }
