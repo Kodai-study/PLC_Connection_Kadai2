@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using MITSUBISHI.Component;
-using System.Data.SqlClient;
-using ActUtlTypeLib;
-using System.Reflection.Emit;
-using ResultDatas;
+﻿using ResultDatas;
+using System;
 
 namespace PLC_Connection
 {
@@ -296,13 +285,15 @@ namespace PLC_Connection
                     checkResults.dipSwitch.DIP_OK = CHECK_RESULT.NG;
 
                 int pattern = 0;
-                if ((bitData & DIP_SW1) != 0)
+
+                //TODO スイッチの論理が逆なので直してもらう
+                if ((bitData & DIP_SW1) == 0)
                     pattern |= 1;
-                if ((bitData & DIP_SW2) != 0)
+                if ((bitData & DIP_SW2) == 0)
                     pattern |= 2;
-                if ((bitData & DIP_SW3) != 0)
+                if ((bitData & DIP_SW3) == 0)
                     pattern |= 4;
-                if ((bitData & DIP_SW4) != 0)
+                if ((bitData & DIP_SW4) == 0)
                     pattern |= 8;
 
                 checkResults.dipSwitch.DIP_PATTERN = pattern;

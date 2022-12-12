@@ -1,16 +1,9 @@
-﻿using System;
+﻿using MITSUBISHI.Component;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
+using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
-using MITSUBISHI.Component;
-using System.Data.SqlClient;
-using System.Data;
-using System.Reflection.Emit;
-using System.Collections;
 
 namespace PLC_Connection
 {

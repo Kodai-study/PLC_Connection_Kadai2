@@ -1,16 +1,9 @@
-﻿//#define debug 
+﻿#define debug 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using MITSUBISHI.Component;
+using System;
 using System.Data.SqlClient;
-using ActUtlTypeLib;
+using System.Threading;
 
 namespace PLC_Connection
 {
@@ -41,7 +34,7 @@ namespace PLC_Connection
             }
 #endif
         }
-     
+
         static void ConnectDB()
         {
             SqlConnection a = new SqlConnection("Data Source=RBPC12;Initial Catalog=Robot22_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
@@ -55,43 +48,71 @@ namespace PLC_Connection
         static void debug()
         {
             int read;
+            int oldX40;
             int[] resultDatas = new int[4];
+            int[] processBits = new int[1];
+
+            Parameters.Bitdata_Process x40 = new Parameters.BITs_X40();
             Parameters.BITS_STATUS x41 = new Parameters.BITS_X41();
             Parameters.BITS_STATUS x42 = new Parameters.BITS_X42();
             Parameters.BITS_STATUS x43 = new Parameters.BITS_X43();
             Parameters.BITS_STATUS x44 = new Parameters.BITS_X44();
+
+            Parameters.BITS_STATUS[] resultBlocks = new Parameters.BITS_STATUS[] { x41, x42, x43, x44 };
+
+            string resultRabel = "ResultBlock";
+            string ProcessLabel = "Result";
             var result = new ResultDatas.Results();
-            for(int i = 0;i < resultDatas.Length; i++)
+            DotUtlType dotUtlType = new DotUtlType
             {
-                resultDatas[i] = -1;
+                ActLogicalStationNumber = 401
+            };
+
+
+            if (dotUtlType.Open() != 0)
+            {
+                Console.WriteLine("MX Componentのオープンエラー");
+                return;
             }
-            DotUtlType dotUtlType = new DotUtlType();
-            dotUtlType.ActLogicalStationNumber = 401;
 
-            //InputSampleResultData(resultDatas);
 
-            read = dotUtlType.Open();
-            string resultRabel = "Result";
-            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 1, ref resultDatas);
-            resultRabel = "ResultBlock";
-            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
+            if (dotUtlType.ReadDeviceBlock(ref ProcessLabel, 1, ref processBits) != 0)
+            {
+                Console.WriteLine("{0}の読み取りエラー", ProcessLabel);
+                return;
+            }
+            oldX40 = processBits[0] & x40.MASK;
 
-            x41.CheckResult(ref result, resultDatas[0]);
-            x42.CheckResult(ref result, resultDatas[1]);
-            x43.CheckResult(ref result, resultDatas[2]);
-            x44.CheckResult(ref result, resultDatas[3]);
+            while (true)
+            {
+                read = dotUtlType.ReadDeviceBlock(ref ProcessLabel, 1, ref processBits);
+                int x0_data = processBits[0] & x40.MASK;
 
-            Array.Clear(resultDatas, 0, 4);
-            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
+                if (oldX40 != x0_data && (x0_data & Parameters.BITs_X40.END_SHOOT) != 0)
+                {
+                    DateTime dateTime = DateTime.Now;
+                    int diff = x0_data ^ oldX40;
+                    oldX40 = x0_data;
+
+                    read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
+
+                    for (int i = 0; i < resultBlocks.Length; i++)
+                    {
+                        resultBlocks[i].CheckResult(ref result, resultDatas[i]);
+                    }
+
+                    /*
+                    x41.CheckResult(ref result, resultDatas[0]);
+                    x42.CheckResult(ref result, resultDatas[1]);
+                    x43.CheckResult(ref result, resultDatas[2]);
+                    x44.CheckResult(ref result, resultDatas[3]);
+                    */
+                    Console.WriteLine(result);
+                    //  break;
+                }
+                Thread.Sleep(2);
+            }
             dotUtlType.Close();
-
-            /*
-            read = dotUtlType.Open();
-            string resultRabel = "Result";
-            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 1, ref resultDatas);
-            resultRabel = "ResultBlock";
-            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
-             */
         }
 
         //DEBUG 結果が入るところでサンプルのデータを入れる関数

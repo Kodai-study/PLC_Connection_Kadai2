@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using MITSUBISHI.Component;
+﻿using System.Text;
 
 namespace ResultDatas
 {
@@ -25,7 +17,8 @@ namespace ResultDatas
     /// </summary>
     public class Results
     {
-        public Results() {
+        public Results()
+        {
             ic = new IC();
             work = new WORK();
             dipSwitch = new DIP_SW();
@@ -39,6 +32,46 @@ namespace ResultDatas
         public DIP_SW dipSwitch;
         public BAT_SOCKET batterySocket;
         public DIODE diode;
+
+        public override string ToString()
+        {
+            StringBuilder str = new StringBuilder("IC : ");
+            str.Append("\n\tIC1_がある ");
+            str.Append(ic.IC1_OK == CHECK_RESULT.OK ? "〇" : "×");
+            str.Append("\n\tIC1_の向き ");
+            str.Append(ic.IC1_DIR == CHECK_RESULT.OK ? "〇" : "×");
+            str.Append("\n\tIC2_がある ");
+            str.Append(ic.IC2_OK == CHECK_RESULT.OK ? "〇" : "×");
+            str.Append("\n\tIC2_の向き ");
+            str.Append(ic.IC2_DIR == CHECK_RESULT.OK ? "〇" : "×");
+
+            str.Append("\n\nWORK : ");
+            str.Append("\n\tワークが正しいものか ");
+            str.Append(work.WORK_OK == CHECK_RESULT.OK ? "〇" : "×");
+            str.Append("\n\tワークの向き ");
+            str.Append(work.WORK_DIR == CHECK_RESULT.OK ? "〇" : "×");
+
+            /*
+            str.Append("\n\nTR");
+            str.Append("\n\tトランジスタが正しい ");
+            str.Append(transister.TR_OK == CHECK_RESULT.OK ? "〇" : "×");
+            */
+
+            str.Append("\n\nDIP_SW");
+            str.Append("\n\tDIPスイッチのパターンが正しい ");
+            str.Append(dipSwitch.DIP_OK == CHECK_RESULT.OK ? "〇" : "×");
+            str.Append("\n\tDIPスイッチのパターン ");
+            str.Append(dipSwitch.DIP_PATTERN);
+
+            str.Append("\n\n電池ソケット ");
+            str.Append("\n\t電池ソケットの向き ");
+            str.Append(batterySocket.SOCKET_DIR == CHECK_RESULT.OK ? "〇" : "×");
+
+            str.Append("\n\nダイオード");
+            str.Append("\n\tダイオードの向きが正しい ");
+            str.Append(diode.DIODE_DIR == CHECK_RESULT.OK ? "〇" : "×");
+            return str.ToString();
+        }
     }
     public class IC
     {
@@ -78,7 +111,7 @@ namespace ResultDatas
     public class DIP_SW
     {
         public DIP_SW() { }
-        public DIP_SW(CHECK_RESULT DIP_OK,int DIP_PATTERN)
+        public DIP_SW(CHECK_RESULT DIP_OK, int DIP_PATTERN)
         {
             this.DIP_OK = DIP_OK;
             this.DIP_PATTERN = DIP_PATTERN;
