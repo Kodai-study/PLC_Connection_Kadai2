@@ -1,17 +1,9 @@
-﻿using System;
+﻿using MITSUBISHI.Component;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
+using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
-using MITSUBISHI.Component;
-using System.Data.SqlClient;
-using ActUtlTypeLib;
-using System.Data;
-using System.Reflection.Emit;
-using System.Collections;
 
 namespace PLC_Connection
 {
@@ -49,14 +41,14 @@ namespace PLC_Connection
         /// </summary>
         DateTime[] processTimeStanps;
 
+        Parameters.Bitdata_Process block_X0;
+
         /// <summary>
         ///  
         /// </summary>
         /// <returns></returns>
         public async Task<bool> Start()
         {
-            this.cancellToken = new CancellationTokenSource();
-            workController = new WorkController();
             dotUtlType = new DotUtlType();
             dotUtlType.ActLogicalStationNumber = 401;
             if (dotUtlType.Open() != 0)
@@ -73,7 +65,12 @@ namespace PLC_Connection
                 dotUtlType.Close();
                 return false;
             }
+
             processTimeStanps = new DateTime[Parameters.StepNumbers];
+            block_X0 = new Parameters.Bit_X();
+            this.cancellToken = new CancellationTokenSource();
+            workController = new WorkController();
+
             await Task.Run(() => Run(cancellToken));
             //TODO 処理が正常終了、異常終了の定義をちゃんとする
             return false;
@@ -91,26 +88,37 @@ namespace PLC_Connection
         {
             bool dbWrite = false;
             int[] datas = new int[1];   //PLCから読み取った値をブロックで格納しておく
-            string label = "shine";     
+            string label = "shine";
             Console.WriteLine("PLCの読み取り開始");
 
             /* プログラム最初に値を読み取って、そこからの変化を見る */
             int read = dotUtlType.ReadDeviceBlock(ref label, 1, ref datas);
             int old_data = datas[0];
+            int[] resultDatas = new int[4];
+            label = "Result";
+            read = dotUtlType.ReadDeviceBlock(ref label, 1, ref datas);
+            label = "shine";
             Task<bool> dbWriteTask = null;      //データベースへの書き込みタスク。
 
             while (true)
             {
                 //TODO ブロック読み取りの時にマスクをかける
                 read = dotUtlType.ReadDeviceBlock(ref label, 1, ref datas);
-                if (old_data != datas[0])
+                int x0_data = datas[0] & block_X0.MASK;
+
+                if (old_data != x0_data)
                 {
                     DateTime dateTime = DateTime.Now;
-                    int diff = datas[0] ^ old_data;
-                    old_data= datas[0];
-                    dbWriteTask = Task.Run(() => Writedata(dateTime, diff, datas[0]));
+                    int diff = x0_data ^ old_data;
+                    old_data = x0_data;
+                    dbWriteTask = Task.Run(() => Writedata(dateTime, diff, datas[0], block_X0));
                     dbWrite = true;
                 }
+
+                string resultRabel = "Result";
+                read = dotUtlType.ReadDeviceBlock(ref resultRabel, 1, ref resultDatas);
+                resultRabel = "ResultBlock";
+                read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
 
                 // キャンセル要求
                 if (token.IsCancellationRequested)
@@ -143,7 +151,7 @@ namespace PLC_Connection
                 int sensorNum = 0;
                 int on_off = (changeBit & sensorData) != 0 ? 1 : 0;
 
-                for (; changeBit != 0; changeBit >>= 1, sensorNum++) { ; }
+                for (; changeBit != 0; changeBit >>= 1, sensorNum++) {; }
 
                 string cmd = String.Format("INSERT INTO PLC_Test (Time,sensor_Number,ON_OFF) VALUES ('{0}.{1:D3}' , {2} , {3})", nowTime, nowTime.Millisecond, sensorNum, on_off);
                 using (var command = new SqlCommand(cmd, sqlConnection))
@@ -164,9 +172,9 @@ namespace PLC_Connection
         /// <param name="changeBit"> 変化していたビット </param>
         /// <param name="sensorData"> 変化していた値の元の値 </param>
         /// <returns> 書き込みを行ったらTrue </returns>
-        
+
         //TODO 書き込みが失敗した場合はreturn falseとは違う処理を行うようにする
-        public bool Writedata(DateTime reactTime, int changeBit, int sensorData)
+        public bool Writedata(DateTime reactTime, int changeBit, int sensorData, Parameters.Bitdata_Process bitBlock)
         {
             bool ChangeON = (changeBit & sensorData) != 0;  //変化したビットが、1に変化したか(true)
             string sql = null;          //INSERT、UPDATEいずれかのSQL文
@@ -175,22 +183,23 @@ namespace PLC_Connection
             try
             {
                 /* 変化が工程の進みと関係なかったら何もしない */
-                if (!Parameters.Bit_X.getProgressNum(changeBit, ChangeON, ref progressNum))
+                if (!bitBlock.getProgressNum(changeBit, ChangeON, ref progressNum))
+                {
+                    return false;
+                }
+
+                /* 前回センサが反応した時間からどれだけ時間がたったか */
+                TimeSpan diffReactTime = reactTime - processTimeStanps[progressNum];
+                processTimeStanps[progressNum] = reactTime;
+
+                /* 工程が進む入力は、前の入力よりChataring_time(定数)以上遅れていた時のみ反応する */
+                if (diffReactTime < Chataring_time)
                 {
                     return false;
                 }
 
                 ///DEBUG パワポ出すためのデバッグコード
                 Console.WriteLine("工程 {0} が完了、時刻 : {1}", progressNum, reactTime.TimeOfDay);
-
-                TimeSpan diffReactTime = reactTime - processTimeStanps[progressNum];
-                processTimeStanps[progressNum] = reactTime;
-
-                /* 連続してセンサ入力がされたときは、無視する */
-                if (diffReactTime < Chataring_time)
-                {
-                    return false;
-                }
 
                 /* ワーク搬入工程が行われたとき、INSERT文で新しくワーク情報を追加する */
                 if (progressNum == 0)
@@ -283,7 +292,7 @@ namespace PLC_Connection
         /// <param name="startTime">　搬入された時刻　</param>
         public string AddnewWork(DateTime startTime)
         {
-            t.Enqueue(new WorkData(startTime, 1));
+            t.Enqueue(new WorkData(startTime, 0));
             return String.Format("INSERT INTO Test_CycleTime ({2}) VALUES ('{0}.{1:D3}')",
                 startTime, startTime.Millisecond, Parameters.TIME_COLUMNAMES[0]);
         }
@@ -307,8 +316,11 @@ namespace PLC_Connection
                 this.startTime = startTime;
             }
         }
+
+        void getCycleID()
+        {
+            string sql = "SELECT Cycle_id";
+        }
     }
 }
-
-
 //TODO IO割付のRtoPLCを見て、X411を読み取る。 配列のサイズを10にしてブロックで読めるか確認する
