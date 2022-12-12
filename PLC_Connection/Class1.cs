@@ -1,4 +1,4 @@
-﻿#define debug 
+﻿//#define debug 
 
 using System;
 using System.Collections.Generic;
@@ -68,12 +68,22 @@ namespace PLC_Connection
             DotUtlType dotUtlType = new DotUtlType();
             dotUtlType.ActLogicalStationNumber = 401;
 
-            InputSampleResultData(resultDatas);
+            //InputSampleResultData(resultDatas);
 
-            x41.checkResults(ref result, resultDatas[0]);
-            x42.checkResults(ref result, resultDatas[1]);
-            x43.checkResults(ref result, resultDatas[2]);
-            x44.checkResults(ref result, resultDatas[3]);
+            read = dotUtlType.Open();
+            string resultRabel = "Result";
+            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 1, ref resultDatas);
+            resultRabel = "ResultBlock";
+            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
+
+            x41.CheckResult(ref result, resultDatas[0]);
+            x42.CheckResult(ref result, resultDatas[1]);
+            x43.CheckResult(ref result, resultDatas[2]);
+            x44.CheckResult(ref result, resultDatas[3]);
+
+            Array.Clear(resultDatas, 0, 4);
+            read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
+            dotUtlType.Close();
 
             /*
             read = dotUtlType.Open();
