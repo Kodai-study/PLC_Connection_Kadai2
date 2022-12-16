@@ -200,7 +200,7 @@ namespace PLC_Connection
             /// <summary> ICの向きが正常だった時に立つビット </summary>
             public const int IC1_DIR = 0b0001000000000000;
 
-            //TODO MASKの実装
+
             public override int MASK
             {
                 get

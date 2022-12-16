@@ -16,8 +16,7 @@ namespace PLC_Connection
         public static void Main()
         {
 #if debug
-            Check_InsertResult();
-            //Check_ResultOutputErrorCodes();
+            Check_ResultOutputErrorCodes();
 #else
             var e = new PLC_MonitorTask();
             var task = e.Start();

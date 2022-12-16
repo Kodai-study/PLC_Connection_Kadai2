@@ -178,7 +178,7 @@ namespace PLC_Connection
         {
             bool ChangeON = (changeBit & sensorData) != 0;  //変化したビットが、1に変化したか(true)
             string sql = null;          //INSERT、UPDATEいずれかのSQL文
-            int progressNum = -1;       //工程が進んだ場合、その工程番号
+            Parameters.Process_Number progressNum = Parameters.Process_Number.NO_CHECK;       //工程が進んだ場合、その工程番号
 
             try
             {
@@ -189,8 +189,8 @@ namespace PLC_Connection
                 }
 
                 /* 前回センサが反応した時間からどれだけ時間がたったか */
-                TimeSpan diffReactTime = reactTime - processTimeStanps[progressNum];
-                processTimeStanps[progressNum] = reactTime;
+                TimeSpan diffReactTime = reactTime - processTimeStanps[(int)progressNum];
+                processTimeStanps[(int)progressNum] = reactTime;
 
                 /* 工程が進む入力は、前の入力よりChataring_time(定数)以上遅れていた時のみ反応する */
                 if (diffReactTime < Chataring_time)
@@ -209,7 +209,7 @@ namespace PLC_Connection
                 /* それ以外の工程が行われたとき、UPDATE文でワーク情報を更新 */
                 else if (progressNum > 0)
                 {
-                    sql = workController.ProcessToSql(progressNum, reactTime.TimeOfDay);
+                    sql = workController.ProcessToSql((int)progressNum, reactTime.TimeOfDay);
                 }
                 using (var command = new SqlCommand(sql, sqlConnection))
                     command.ExecuteNonQuery();
