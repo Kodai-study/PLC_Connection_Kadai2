@@ -1,6 +1,7 @@
 ﻿#define debug 
 
 using MITSUBISHI.Component;
+using ResultDatas;
 using System;
 using System.Data.SqlClient;
 using System.Threading;
@@ -12,19 +13,16 @@ namespace PLC_Connection
     /// </summary>
     class Class1
     {
-        public DotUtlType dotUtlType;
         public static void Main()
         {
 #if debug
-            debug();
+            Check_InsertResult();
+            //Check_ResultOutputErrorCodes();
 #else
             var e = new PLC_MonitorTask();
             var task = e.Start();
             Thread.Sleep(5000);
-            //task.Wait();
-            //e.stop();
-            bool IsSuccess = task.Result;
-            if (IsSuccess)
+            if (task.Result)
             {
                 Console.WriteLine("正常終了");
             }
@@ -35,24 +33,10 @@ namespace PLC_Connection
 #endif
         }
 
-        static void ConnectDB()
-        {
-            SqlConnection a = new SqlConnection("Data Source=RBPC12;Initial Catalog=Robot22_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-            a.Open();
-            var nowTime = DateTime.Now;
-            string cmd = String.Format("INSERT INTO PLC_Test (Time) VALUES ('{0}.{1:D3}')", nowTime, nowTime.Millisecond);
-            using (var command = new SqlCommand(cmd, a))
-                command.ExecuteNonQuery();
-        }
 
-        static void debug()
+        //DEBUG サンプルの接点データから、エラー取得がうまくいくかどうかを見たやつ
+        static void Check_ResultOutputErrorCodes()
         {
-            int read;
-            int oldX40;
-            int count = 1;
-            int[] resultDatas = new int[4];
-            int[] processBits = new int[1];
-
             Parameters.Bitdata_Process x40 = new Parameters.BITs_X40();
             Parameters.BITS_STATUS x41 = new Parameters.BITS_X41();
             Parameters.BITS_STATUS x42 = new Parameters.BITS_X42();
@@ -61,62 +45,32 @@ namespace PLC_Connection
 
             Parameters.BITS_STATUS[] resultBlocks = new Parameters.BITS_STATUS[] { x41, x42, x43, x44 };
 
-            string resultRabel = "ResultBlock";
-            string ProcessLabel = "Result";
-            var result = new ResultDatas.Results();
-            DotUtlType dotUtlType = new DotUtlType
-            {
-                ActLogicalStationNumber = 401
-            };
+            int[] resultDatas = new int[resultBlocks.Length];
+
+            InputAll_OKData(resultDatas);
 
 
-            if (dotUtlType.Open() != 0)
+              var result = new ResultDatas.Results();
+            for (int i = 0; i < resultBlocks.Length; i++)
             {
-                Console.WriteLine("MX Componentのオープンエラー");
-                return;
+                resultBlocks[i].CheckResult(ref result, resultDatas[i]);
             }
+            Console.WriteLine(result + "\n---------エラーコード---");
+            var All_OKDatas = result.getErrorCodes();
+            All_OKDatas.ForEach(x => Console.WriteLine(x));
 
-
-            if (dotUtlType.ReadDeviceBlock(ref ProcessLabel, 1, ref processBits) != 0)
+            InputAll_NGData(resultDatas);
+            for (int i = 0; i < resultBlocks.Length; i++)
             {
-                Console.WriteLine("{0}の読み取りエラー", ProcessLabel);
-                return;
+                resultBlocks[i].CheckResult(ref result, resultDatas[i]);
             }
-            oldX40 = processBits[0] & x40.MASK;
-
-            while (true)
-            {
-                read = dotUtlType.ReadDeviceBlock(ref ProcessLabel, 1, ref processBits);
-                int x0_data = processBits[0] & x40.MASK;
-
-                if (oldX40 != x0_data)
-                {
-                    oldX40 = x0_data;
-                    if((x0_data & Parameters.BITs_X40.END_SHOOT) == 0)
-                    {
-                        continue;
-                    }
-                    DateTime dateTime = DateTime.Now;
-                    int diff = x0_data ^ oldX40;
-                    
-
-                    read = dotUtlType.ReadDeviceBlock(ref resultRabel, 4, ref resultDatas);
-
-                    for (int i = 0; i < resultBlocks.Length; i++)
-                    {
-                        resultBlocks[i].CheckResult(ref result, resultDatas[i]);
-                    }
-
-                    Console.WriteLine("{0}個目　　　\n{1}", count, result);
-                    //  break;
-                }
-                Thread.Sleep(2);
-            }
-            dotUtlType.Close();
+            Console.WriteLine(result + "\n---------エラーコード---");
+            var All_NGErrorCodes = result.getErrorCodes();
+            All_NGErrorCodes.ForEach(x => Console.WriteLine(x));
         }
 
         //DEBUG 結果が入るところでサンプルのデータを入れる関数
-        static void InputSampleResultData(int[] datas)
+        static void InputAll_OKData(int[] datas)
         {
             if (datas.Length != 4)
             {
@@ -127,10 +81,16 @@ namespace PLC_Connection
             Parameters.BITS_STATUS x42 = new Parameters.BITS_X42();
             Parameters.BITS_STATUS x43 = new Parameters.BITS_X43();
             Parameters.BITS_STATUS x44 = new Parameters.BITS_X44();
-            datas[0] = x41.MASK & (~Parameters.BITS_X41.WORK_DIR_NG);
+            datas[0] = x41.MASK & ~(Parameters.BITS_X41.WORK_DIR_NG);
             datas[1] = x42.MASK;
             datas[2] = x43.MASK;
             datas[3] = x44.MASK;
+        }
+
+        public static void InputAll_NGData(int[] datas) {
+            Array.Clear(datas, 0, datas.Length);
+            datas[0] = Parameters.BITS_X41.WORK_DIR_NG;
+            datas[2] = Parameters.BITS_X43.DIP_OK;
         }
     }
 }

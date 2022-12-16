@@ -14,9 +14,29 @@ namespace PLC_Connection
         ///  の配列。 添え字は工程につけられた番号になる
         /// </summary>
         public static readonly string[] TIME_COLUMNAMES =
-            { "Carry_in", "Position", "Shoot_S", "Shoot_E",
+        {
+            "Carry_in", "Position", "Shoot_S", "Shoot_E",
                "Ready", "Arm1", "Stand", "Arm2", "Installation","Carry_out"
-            };
+        };
+
+        /// <summary>
+        ///  工程の番号、種類を管理する。工程を表すコラムの文字列である
+        ///  TIME_COLUMNAMES の添え字と対応する。
+        /// </summary>
+        public enum Process_Number
+        {
+            NO_CHECK = -1,
+            Carry_in,
+            Position,
+            Shoot_Start,
+            Shoot_End,
+            Ready,
+            Arm1,
+            Stand,
+            Arm2,
+            Installation,
+            Carry_out
+        }
 
         /// <summary>
         ///  工程数を返すゲッタ
@@ -39,10 +59,10 @@ namespace PLC_Connection
             ///  工程に変化がある場合はその工程番号を返す
             /// </summary>
             /// <param name="bits"> 変わっていた部分のビットが1になっている値。立っているビットは1つのみ </param>
-            /// <param name="on"> 変化が0→1:true  1→0:false </param>
+            /// <param name="changeTo1"> 変化が0→1:true  1→0:false </param>
             /// <param name="progressNum"> ビットの変化が表す工程番号 </param>
             /// <returns> bool ビットの変更が、工程の進み具合を表しているかどうか </returns>
-            public abstract bool getProgressNum(int bits, bool on, ref int progressNum);
+            public abstract bool getProgressNum(int bits, bool changeTo1, ref Process_Number progressNum);
         }
 
         /// <summary>
@@ -67,45 +87,30 @@ namespace PLC_Connection
                                                    OUT_CONVARE_FIRST, OUT_CONVARE_END, STAND_POS };
 
 
-            public override bool getProgressNum(int bits, bool on, ref int progressNum)
+            public override bool getProgressNum(int bits, bool changeTo1, ref Process_Number progressNum)
             {
                 switch (bits)
                 {
                     case IN_CONVARE_FIRST:
-                        if (on) { progressNum = 0; return true; }
+                        if (changeTo1) { progressNum = Process_Number.Carry_in; return true; }
                         return false;
                     case PT_POSITION:
-                        if (on) { progressNum = 1; return true; }
+                        if (changeTo1) { progressNum = Process_Number.Position; return true; }
                         return false;
                     case CONVARE_END:
-                        if (on) progressNum = 4; else progressNum = 5; return true;
+                        if (changeTo1) progressNum = Process_Number.Ready; else progressNum = Process_Number.Arm1; return true;
                     case STAND_POS:
-                        if (on) progressNum = 6; else progressNum = 7; return true;
+                        if (changeTo1) progressNum = Process_Number.Stand; else progressNum = Process_Number.Arm2; return true;
                     case OUT_CONVARE_FIRST:
-                        if (on) { progressNum = 8; return true; }
+                        if (changeTo1) { progressNum = Process_Number.Installation; return true; }
                         return false;
                     case OUT_CONVARE_END:
-                        if (on) { progressNum = 9; return true; }
+                        if (changeTo1) { progressNum = Process_Number.Carry_out; return true; }
                         return false;
                     default: return false;
                 }
             }
 
-            public static string GetColumName(short bit)
-            {
-                int index = Array.IndexOf(bits, bit);
-
-                if (index < 0)
-                {
-                    return null;
-                }
-                switch (index)
-                {
-                    case 0:
-                        return Parameters.TIME_COLUMNAMES[1];
-                    default: return null;
-                }
-            }
 
             public override int MASK
             {
@@ -165,20 +170,23 @@ namespace PLC_Connection
                 get { return END_SHOOT | START_SHOOT; }
             }
 
-            public override bool getProgressNum(int bits, bool on, ref int progressNum)
+            public override bool getProgressNum(int bits, bool changeTo1, ref Process_Number progressNum)
             {
-                if (!on) return false;
+                if (!changeTo1) return false;
 
                 switch (bits)
                 {
-                    case START_SHOOT: progressNum = 2; break;
-                    case END_SHOOT: progressNum = 3; break;
+                    case START_SHOOT: progressNum = Process_Number.Shoot_Start; break;
+                    case END_SHOOT: progressNum = Process_Number.Shoot_End; break;
                     default: return false;
                 }
                 return true;
             }
         }
 
+        /// <summary>
+        ///   X410～X41Fまでのビットブロックの管理を行う
+        /// </summary>
         public class BITS_X41 : BITS_STATUS
         {
             /// <summary> ワークが正常だった時の </summary>
@@ -226,6 +234,10 @@ namespace PLC_Connection
                     checkResults.ic.IC1_DIR = CHECK_RESULT.NG;
             }
         }
+
+        /// <summary>
+        ///   X420～X42Fまでのビットブロックの管理を行う
+        /// </summary>
         public class BITS_X42 : BITS_STATUS
         {
             /// <summary> ICが正常だったら立つビット </summary>
@@ -259,6 +271,10 @@ namespace PLC_Connection
                     checkResults.transister.TR_OK = CHECK_RESULT.NG;
             }
         }
+
+        /// <summary>
+        ///   X430～X43Fまでのビットブロックの管理を行う
+        /// </summary>
         public class BITS_X43 : BITS_STATUS
         {
             /// <summary> DIPスイッチの4つ目の状態を表すビット。1だとONになっている </summary>
@@ -299,6 +315,11 @@ namespace PLC_Connection
                 checkResults.dipSwitch.DIP_PATTERN = pattern;
             }
         }
+
+
+        /// <summary>
+        ///   X440～X44Fまでのビットブロックの管理を行う
+        /// </summary>
         public class BITS_X44 : BITS_STATUS
         {
             /// <summary> 電池ソケットの向きが正しいかどうか </summary>
