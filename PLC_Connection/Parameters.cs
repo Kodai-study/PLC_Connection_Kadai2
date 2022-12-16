@@ -1,5 +1,4 @@
 ﻿using ResultDatas;
-using System;
 
 namespace PLC_Connection
 {

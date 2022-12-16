@@ -1,10 +1,8 @@
-﻿#define debug 
+﻿//#define debug 
 
-using MITSUBISHI.Component;
-using ResultDatas;
 using System;
-using System.Data.SqlClient;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace PLC_Connection
 {
@@ -19,9 +17,9 @@ namespace PLC_Connection
             Check_ResultOutputErrorCodes();
 #else
             var e = new PLC_MonitorTask();
-            var task = e.Start();
+            Task<bool> plcMonitorTask = e.Start();
             Thread.Sleep(5000);
-            if (task.Result)
+            if (plcMonitorTask.Result)
             {
                 Console.WriteLine("正常終了");
             }
