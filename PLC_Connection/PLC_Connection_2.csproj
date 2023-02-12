@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="WorkController.cs" />
     <Compile Include="DatabaseControllr.cs" />
     <Compile Include="ResultDatas.cs" />
     <Compile Include="Parameters.cs" />
