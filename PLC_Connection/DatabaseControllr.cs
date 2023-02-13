@@ -9,7 +9,7 @@ namespace PLC_Connection
     /// <summary>
     ///  データベースへの書込みを管理するクラス
     /// </summary>
-    static public class DatabaseController
+    public class DatabaseController
     {
         /// <summary>
         ///  現在データベースに接続しているかどうか

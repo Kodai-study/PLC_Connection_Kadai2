@@ -158,7 +158,7 @@ namespace PLC_Connection
                 // キャンセル要求
                 if (token.IsCancellationRequested)
                 {
-                    Console.WriteLine("MyThread IsCancellationRequested");
+                    Console.WriteLine("スレッドのキャンセル要求が来ました");
                     break;
                 }
                 Thread.Sleep(2);
