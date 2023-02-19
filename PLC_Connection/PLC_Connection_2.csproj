@@ -8,10 +8,26 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>PLC_Connection</RootNamespace>
     <AssemblyName>PLC_Connection</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -57,28 +73,32 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="Modules\DataBlock.cs" />
+    <Compile Include="Modules\PLCContactData.cs" />
+    <Compile Include="WorkController.cs" />
+    <Compile Include="DatabaseControllr.cs" />
+    <Compile Include="ResultDatas.cs" />
     <Compile Include="Parameters.cs" />
     <Compile Include="PLC_monitorTask.cs" />
-    <Compile Include="net_test.cs" />
-    <Compile Include="LogicCtrl.cs" />
     <Compile Include="Class1.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="ActUtlTypeLib">
-      <Guid>{D217E54E-4A26-4A76-B0AB-57166B90F9AF}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MITSUBISHI.Component.DotSupportMsg, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5d8f6a8a93196d7a, processorArchitecture=x86" />
     <Reference Include="MITSUBISHI.Component.DotUtlType, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6b44489e63a9c4bd, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 および x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

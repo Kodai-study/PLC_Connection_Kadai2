@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLC_Connection", "PLC_Connection\PLC_Connection.csproj", "{C7CFC45C-D9D4-459F-BF84-F720AAF02FEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLC_Connection_2", "PLC_Connection\PLC_Connection_2.csproj", "{C7CFC45C-D9D4-459F-BF84-F720AAF02FEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
