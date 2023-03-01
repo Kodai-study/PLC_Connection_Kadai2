@@ -161,11 +161,5 @@ namespace PLC_Connection
                 return true;
             }
         }
-
-       
-
-
-
-
     }
 }

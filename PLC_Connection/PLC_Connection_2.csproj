@@ -77,15 +77,16 @@
     <Compile Include="Modules\BlockToResultChanger_X44.cs" />
     <Compile Include="Modules\BlockToResultChanger_X42.cs" />
     <Compile Include="Modules\BlockToResultChanger_X41.cs" />
+    <Compile Include="PLC_monitorTask.cs" />
     <Compile Include="ResultDataCreater.cs" />
-    <Compile Include="Modules\VisualStationMonitor.cs" />
+    <Compile Include="VisualStationMonitor.cs" />
     <Compile Include="Modules\DataBlock.cs" />
     <Compile Include="Modules\PLCContactData.cs" />
     <Compile Include="WorkController.cs" />
     <Compile Include="DatabaseControllr.cs" />
     <Compile Include="ResultDatas.cs" />
     <Compile Include="Parameters.cs" />
-    <Compile Include="PLC_monitorTask.cs" />
+    <None Include="Old_PLC_monitorTask.cs" />
     <Compile Include="MainTask.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,9 +12,8 @@ namespace PLC_Connection.Modules
         private int data;
 
         private int oldData;
-        List<ChangeBitData> changes;
+        private List<ChangeBitData> changes;
 
-        public int BitMask { get; set; } = -1;
         public int NewBlockData
         {
             set
