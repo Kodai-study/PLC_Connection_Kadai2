@@ -29,6 +29,9 @@ namespace PLC_Connection.Modules
 
         private int? id = null;
 
+        public bool IsVisualInspected { get; set; } = false;
+        public bool IsFunctionInspected { get; set; } = false;
+
 
         public WorkData(DateTime startTime, CommonParameters.Process_Number progressNum)
         {

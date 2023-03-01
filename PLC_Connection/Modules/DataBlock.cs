@@ -47,7 +47,7 @@ namespace PLC_Connection.Modules
             {
                 foreach (var e in changes)
                 {
-                    if (e.isStundUp)
+                    if (e.IsStundUp)
                         return true;
                 }
                 return false;
@@ -64,11 +64,11 @@ namespace PLC_Connection.Modules
         public class ChangeBitData
         {
             public int bitNumber { get; set; }
-            public bool isStundUp { get; set; }
+            public bool IsStundUp { get; set; }
             public ChangeBitData(int bitNumber, bool isStundUp)
             {
                 this.bitNumber = bitNumber;
-                this.isStundUp = isStundUp;
+                this.IsStundUp = isStundUp;
             }
         }
     }

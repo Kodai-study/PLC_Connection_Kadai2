@@ -18,6 +18,8 @@ namespace PLC_Connection
         /// </summary>
         private Queue<WorkData> insideWorks = null;
 
+        
+
 
         public WorkController()
         {
@@ -68,6 +70,29 @@ namespace PLC_Connection
             insideWorks.Enqueue(new WorkData(startTime, CommonParameters.Process_Number.Supply));
             DatabaseController.ExecSQL(String.Format("INSERT INTO Test_CycleTime ({2}) VALUES ('{0}.{1:D3}')",
                 startTime, startTime.Millisecond, CommonParameters.TIME_COLUMNAMES[0]));
+        }
+
+        public WorkData getVisualCheckedWork()
+        {
+            foreach (var e in insideWorks)
+            {
+                if (!e.IsVisualInspected && e.progressNum >= CommonParameters.Process_Number.VisualStation_in)
+                {
+                    return e;
+                }
+            }
+            return null;
+        }
+
+        public WorkData getFunctionCheckedWork() {
+            foreach (var e in insideWorks)
+            {
+                if (!e.IsFunctionInspected && e.progressNum >= CommonParameters.Process_Number.FunctionStation_in)
+                {
+                    return e;
+                }
+            }
+            return null;
         }
 
     }

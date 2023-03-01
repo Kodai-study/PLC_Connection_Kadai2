@@ -1,5 +1,6 @@
 ﻿using MITSUBISHI.Component;
 using PLC_Connection.Modules;
+using PLC_Connection.StationMonitor;
 using ResultDatas;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,7 @@ namespace PLC_Connection
         PLCContactData plcData = new PLCContactData();
 
         VisualStationMonitor visualStationMonitor;
+        FunctionStationMonitor functionStationMonitor;
 
         public PLC_MonitorTask()
         {

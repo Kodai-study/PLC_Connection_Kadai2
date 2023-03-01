@@ -80,7 +80,9 @@
     <Compile Include="Modules\BlockToResultChanger_X41.cs" />
     <Compile Include="PLC_monitorTask.cs" />
     <Compile Include="ResultDataCreater.cs" />
-    <Compile Include="VisualStationMonitor.cs" />
+    <Compile Include="StationMonitor\FunctionStationMonitor.cs" />
+    <Compile Include="StationMonitor\Base_StationMonitor.cs" />
+    <Compile Include="StationMonitor\VisualStationMonitor.cs" />
     <Compile Include="Modules\DataBlock.cs" />
     <Compile Include="Modules\PLCContactData.cs" />
     <Compile Include="WorkController.cs" />
