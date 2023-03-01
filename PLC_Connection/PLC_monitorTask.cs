@@ -4,6 +4,7 @@ using PLC_Connection.StationMonitor;
 using ResultDatas;
 using System;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,13 +37,17 @@ namespace PLC_Connection
         WorkController workController;
 
         PLCContactData plcData = new PLCContactData();
+        readonly Base_StationMonitor visualStationMonitor;
+        readonly Base_StationMonitor functionStationMonitor;
 
-        VisualStationMonitor visualStationMonitor;
-        FunctionStationMonitor functionStationMonitor;
 
         public PLC_MonitorTask()
         {
-            visualStationMonitor = new VisualStationMonitor(this, workController);
+            MemoryMappedFile share_mem = MemoryMappedFile.OpenExisting("shared_memory");
+            MemoryMappedViewAccessor accessor = share_mem.CreateViewAccessor();
+            accessor.Write(0, 1);
+            visualStationMonitor = new VisualStationMonitor(this, workController, accessor);
+            functionStationMonitor = new FunctionStationMonitor(this, workController, accessor);
         }
 
         /// <summary>
@@ -102,6 +107,7 @@ namespace PLC_Connection
                 plcData.Y34_Block.NewBlockData = blockData_y41[3];
 
                 visualStationMonitor.CheckData(plcData);
+                functionStationMonitor.CheckData(plcData);
 
 
                 Thread.Sleep(10);

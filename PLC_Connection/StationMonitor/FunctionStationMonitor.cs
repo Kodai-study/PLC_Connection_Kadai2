@@ -2,6 +2,7 @@
 using ResultDatas;
 using System;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace PLC_Connection.StationMonitor
     {
 
 
-        public FunctionStationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController) : base(plc_MonitorTask, workController)
+        public FunctionStationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
 
         }
@@ -31,6 +32,8 @@ namespace PLC_Connection.StationMonitor
 
         public void getResult()
         {
+
+
             WorkData checkedWork = workController.getFunctionCheckedWork();
 
             if (checkedWork == null)
@@ -42,5 +45,6 @@ namespace PLC_Connection.StationMonitor
 
             checkedWork.IsVisualInspected = true;
         }
+
     }
 }

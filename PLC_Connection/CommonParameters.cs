@@ -38,4 +38,23 @@ namespace PLC_Connection
         public static int StepNumbers { get { return TIME_COLUMNAMES.Length; } }
 
     }
+
+    public enum MEMORY_SPACE
+    {
+        NUMBER_OF_WORK_VISUAL_STATION,
+        NUMBER_OF_WORK_FUNCTIONAL_STATION,
+        NUMBER_OF_WORK_ASSEMBLY_STATION,
+        NUMBER_OF_OKSTOCK,
+        NUMBER_OF_NGSTOCK,
+        IS_SYSTEM_PAUSE,
+        IS_INSPECTED_JUST_BEFORE,
+        RESULT_FREQUENCY,
+        RESULT_VOLTAGE,
+        STATE_OF_SUPPLY_ROBOT,
+        STATE_OF_VISUAL_STATION,
+        STATE_OF_FUNCTION_STATION,
+        STATE_OF_ASSEMBLY_STATION,
+        NUMNER_OF_STATE_KIND
+    }
+
 }
