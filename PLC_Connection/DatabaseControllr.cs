@@ -35,21 +35,8 @@ namespace PLC_Connection
         /// <returns> 接続が成功、もしくはすでに接続済みならTrue </returns>
         public static bool DBConnection()
         {
-            if (!Isconnection)
-            {
-                try
-                {
-                    dbConnection = new SqlConnection(DEFAULT_CONNECTION_STR);
-                    dbConnection.Open();
-                    return Isconnection = true;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                    return Isconnection = false;
-                }
-            }
-            return true;
+
+            return DBConnection(DEFAULT_CONNECTION_STR);
         }
 
         /// <summary>

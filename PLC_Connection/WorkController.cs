@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PLC_Connection.Modules;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,17 +34,17 @@ namespace PLC_Connection
         ///  行われた変更から、ワーク情報を更新するSQL文を作成
         /// </summary>
         /// <param name="progressNum"> 工程番号。Parameterクラスからとってくる </param>
-        /// <see cref="Parameters.Bit_X.getProgressNum(int, bool, ref int)"/>
+        /// <see cref="CommonParameters.Bit_X.getProgressNum(int, bool, ref int)"/>
         /// <param name="nowTime"> センサが反応した時刻 </param>
         /// <returns> 作成したUPDATE文 </returns>
         /// TODO エラー時の返り値等を決めておく
 
-        public string ProcessToSql(Parameters.Process_Number progressNum, TimeSpan nowTime)
+        public string ProcessToSql(CommonParameters.Process_Number progressNum, TimeSpan nowTime)
         {
             //TODO プロセス番号も列挙型で管理するようにする
             DateTime? startTime = null;
             /* 搬出工程が行われたら、管理キューから1つ破棄する */
-            if (progressNum == Parameters.Process_Number.Carry_out)
+            if (progressNum == CommonParameters.Process_Number.Carry_out)
             {
                 startTime = insideWorks.Dequeue().startTime;
             }
@@ -56,7 +57,7 @@ namespace PLC_Connection
                     {
                         e.progressNum = progressNum;
                         startTime = e.startTime;
-                        if (progressNum == Parameters.Process_Number.Shoot_End)
+                        if (progressNum == CommonParameters.Process_Number.Shoot_End)
                         {
                             lastCheckWork = e;
                         }
@@ -66,7 +67,7 @@ namespace PLC_Connection
                 }
             }
             return String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in BETWEEN '{2}' AND '{3}'",
-                    Parameters.TIME_COLUMNAMES[(int)progressNum], nowTime, startTime, startTime + TimeSpan.FromSeconds(1));
+                    CommonParameters.TIME_COLUMNAMES[(int)progressNum], nowTime, startTime, startTime + TimeSpan.FromSeconds(1));
         }
 
         /// <summary>
@@ -77,81 +78,8 @@ namespace PLC_Connection
         {
             insideWorks.Enqueue(new WorkData(startTime, 0));
             return String.Format("INSERT INTO Test_CycleTime ({2}) VALUES ('{0}.{1:D3}')",
-                startTime, startTime.Millisecond, Parameters.TIME_COLUMNAMES[0]);
+                startTime, startTime.Millisecond, CommonParameters.TIME_COLUMNAMES[0]);
         }
 
-        /// <summary>
-        ///  検査データを表すクラス
-        /// </summary>
-        public class WorkData
-        {
-            /// <summary>
-            ///  ワークが最後に行った工程の番号
-            /// </summary>
-            public Parameters.Process_Number progressNum;
-            /// <summary>
-            ///  ワークが搬入されてきた時間。これでテーブル操作の時にワークを識別する。
-            /// </summary>
-            public DateTime startTime;
-
-            private int? cycle_code = null;
-
-            private int? id = null;
-
-
-            public WorkData(DateTime startTime, Parameters.Process_Number progressNum)
-            {
-                this.progressNum = progressNum;
-                this.startTime = startTime;
-            }
-
-            public int? CycleCode
-            {
-                //TODO startTimeからCycle_codeをとってくるSQL文を実行
-                get
-                {
-                    if (cycle_code != null)
-                        return cycle_code;
-
-                    string getCycleCodeSql = String.Format
-                        ("SELECT cycle_code FROM Test_CycleTime WHERE Carry_in BETWEEN '{0}' and '{1}'",
-                        this.startTime, startTime + TimeSpan.FromSeconds(1));
-
-                    if (DatabaseController.GetOneParameter<int?>(getCycleCodeSql, ref cycle_code))
-                    {
-                        return cycle_code;
-                    }
-                    else
-                    {
-                        cycle_code = null;
-                        return cycle_code;
-                    }
-                }
-            }
-
-            public int? WorkID
-            {
-                get
-                {
-                    if (id != null)
-                        return id;
-
-                    if (cycle_code == null)
-                    {
-                        cycle_code = this.CycleCode;
-                    }
-                    string getWorkIDSql = String.Format
-                        ("SELECT ID FROM Test_Data WHERE Cycle_Code = {0}", cycle_code);
-
-                    if (DatabaseController.GetOneParameter<int?>(getWorkIDSql, ref id))
-                        return id;
-                    else
-                    {
-                        id = null;
-                        return null;
-                    }
-                }
-            }
-        }
     }
 }

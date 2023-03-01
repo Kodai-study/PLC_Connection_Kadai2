@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="Modules\WorkData.cs" />
     <Compile Include="Modules\BlockToResultChanger_X43.cs" />
     <Compile Include="Modules\BlockToResultChanger_X44.cs" />
     <Compile Include="Modules\BlockToResultChanger_X42.cs" />
@@ -85,7 +86,7 @@
     <Compile Include="WorkController.cs" />
     <Compile Include="DatabaseControllr.cs" />
     <Compile Include="ResultDatas.cs" />
-    <Compile Include="Parameters.cs" />
+    <Compile Include="CommonParameters.cs" />
     <None Include="Old_PLC_monitorTask.cs" />
     <Compile Include="MainTask.cs" />
   </ItemGroup>

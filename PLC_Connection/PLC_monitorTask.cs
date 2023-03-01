@@ -36,13 +36,7 @@ namespace PLC_Connection
 
 
 
-        /// <summary>
-        ///  工程の進みを検知するためのビットブロック管理オブジェクト
-        ///  X000～X00Fまでを管理
-        /// </summary>
-        Parameters.Bitdata_Process block_X0;
-        /// <summary> X040～X04Fまでのビットを監視し、工程の進み具合を検知 </summary>
-        Parameters.Bitdata_Process x40;
+
 
         PLCContactData plcData = new PLCContactData();
 
@@ -77,7 +71,6 @@ namespace PLC_Connection
                 return false;
             }
 
-            block_X0 = new Parameters.Bit_X();
             this.cancellToken = new CancellationTokenSource();
             workController = new WorkController();
 
@@ -97,12 +90,12 @@ namespace PLC_Connection
         /// <see cref="PLC_MonitorTask.cancellToken"/>
         public void Run(CancellationTokenSource token)
         {
-            bool dbWrite = false;
             string label = "Y31";
-            string ProcessLabel = "Result";
             int[] blockData_y41 = new int[4];
             Console.WriteLine("PLCの読み取り開始");
-            while (true)
+
+            //キャンセル要求されるまで無限ループ
+            while (!token.IsCancellationRequested)
             {
 
                 dotUtlType.ReadDeviceBlock(ref label, 4, ref blockData_y41);
@@ -111,14 +104,12 @@ namespace PLC_Connection
                 plcData.Y34_Block.NewBlockData = blockData_y41[3];
 
                 visualStationMonitor.checkData(plcData);
-                // キャンセル要求
-                if (token.IsCancellationRequested)
-                {
-                    Console.WriteLine("スレッドのキャンセル要求が来ました");
-                    break;
-                }
-                Thread.Sleep(2);
-            }
+
+                
+                Thread.Sleep(10);
+            }//キャンセルされるまで続くポーリング処理
+
+            Console.WriteLine("スレッドのキャンセル要求が来ました");
         }
 
 

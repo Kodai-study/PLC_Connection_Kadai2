@@ -16,8 +16,8 @@ namespace PLC_Connection
 #if debug
             Check_ResultOutputErrorCodes();
 #else
-            var e = new PLC_MonitorTask();
-            Task<bool> plcMonitorTask = e.Start();
+            PLC_MonitorTask mainPLCMonitorTask = new PLC_MonitorTask();
+            Task<bool> plcMonitorTask = mainPLCMonitorTask.Start();
             Thread.Sleep(5000);
             if (plcMonitorTask.Result)
             {
@@ -29,7 +29,5 @@ namespace PLC_Connection
             }
 #endif
         }
-
-
     }
 }
