@@ -12,6 +12,7 @@ namespace PLC_Connection.StationMonitor
     public class FunctionStationMonitor : Base_StationMonitor
     {
 
+        private int numberOfWork = 0;
 
         public FunctionStationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
@@ -27,10 +28,16 @@ namespace PLC_Connection.StationMonitor
                 {
                     // 検査終了等のデータを読み取る
                 }
+
+                /*
+                 numberOfWork ++;
+                
+                UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, numberOfWork);
+                 */
             }
         }
 
-        public void getResult()
+        public void GetFunctionalInspectionResult()
         {
 
 
