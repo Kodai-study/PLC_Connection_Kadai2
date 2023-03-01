@@ -73,6 +73,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="Modules\BlockToResultChanger_X43.cs" />
+    <Compile Include="Modules\BlockToResultChanger_X44.cs" />
+    <Compile Include="Modules\BlockToResultChanger_X42.cs" />
+    <Compile Include="Modules\BlockToResultChanger_X41.cs" />
+    <Compile Include="ResultDataCreater.cs" />
     <Compile Include="Modules\VisualStationMonitor.cs" />
     <Compile Include="Modules\DataBlock.cs" />
     <Compile Include="Modules\PLCContactData.cs" />
