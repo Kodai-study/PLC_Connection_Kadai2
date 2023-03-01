@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="Modules\VisualStationMonitor.cs" />
     <Compile Include="Modules\DataBlock.cs" />
     <Compile Include="Modules\PLCContactData.cs" />
     <Compile Include="WorkController.cs" />
@@ -80,7 +81,7 @@
     <Compile Include="ResultDatas.cs" />
     <Compile Include="Parameters.cs" />
     <Compile Include="PLC_monitorTask.cs" />
-    <Compile Include="Class1.cs" />
+    <Compile Include="MainTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MITSUBISHI.Component.DotSupportMsg, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5d8f6a8a93196d7a, processorArchitecture=x86" />

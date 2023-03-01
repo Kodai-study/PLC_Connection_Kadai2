@@ -9,7 +9,7 @@ namespace PLC_Connection
     /// <summary>
     ///  メイン実行のクラス
     /// </summary>
-    class Class1
+    class MainTask
     {
         public static void Main()
         {
@@ -47,7 +47,7 @@ namespace PLC_Connection
             InputAll_OKData(resultDatas);
 
 
-              var result = new ResultDatas.Results();
+            var result = new ResultDatas.Results();
             for (int i = 0; i < resultBlocks.Length; i++)
             {
                 resultBlocks[i].CheckResult(ref result, resultDatas[i]);
@@ -84,7 +84,8 @@ namespace PLC_Connection
             datas[3] = x44.MASK;
         }
 
-        public static void InputAll_NGData(int[] datas) {
+        public static void InputAll_NGData(int[] datas)
+        {
             Array.Clear(datas, 0, datas.Length);
             datas[0] = Parameters.BITS_X41.WORK_DIR_NG;
             datas[2] = Parameters.BITS_X43.DIP_OK;

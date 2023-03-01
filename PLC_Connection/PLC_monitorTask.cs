@@ -2,12 +2,13 @@
 using ResultDatas;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace PLC_Connection
 {
-    class PLC_MonitorTask
+    public class PLC_MonitorTask
     {
         /// <summary>
         ///  チャタリング防止として、前のセンサ読み込みから
@@ -276,5 +277,14 @@ namespace PLC_Connection
             }
             return checkResult;
         }
+
+        public int[] getVisualInspectionResult()
+        {
+            string label = "ResultBlock";
+            int[] resultsDataBlock= new int[4];
+            dotUtlType.ReadDeviceBlock(ref label, 4, ref resultsDataBlock);
+            return resultsDataBlock;
+        }
+
     }
 }
