@@ -34,17 +34,13 @@ namespace PLC_Connection
         /// </summary>
         WorkController workController;
 
-
-
-
-
         PLCContactData plcData = new PLCContactData();
 
         VisualStationMonitor visualStationMonitor;
 
         public PLC_MonitorTask()
         {
-            visualStationMonitor = new VisualStationMonitor(this);
+            visualStationMonitor = new VisualStationMonitor(this, workController);
         }
 
         /// <summary>
@@ -103,9 +99,9 @@ namespace PLC_Connection
                 plcData.Y33_Block.NewBlockData = blockData_y41[2];
                 plcData.Y34_Block.NewBlockData = blockData_y41[3];
 
-                visualStationMonitor.checkData(plcData);
+                visualStationMonitor.CheckData(plcData);
 
-                
+
                 Thread.Sleep(10);
             }//キャンセルされるまで続くポーリング処理
 

@@ -10,7 +10,7 @@ namespace PLC_Connection
     /// <summary>
     ///  検査ステーションに入ってきたワークの管理を行う
     /// </summary>
-    class WorkController
+    public class WorkController
     {
         /// <summary>
         ///  ステーション内にあるワークの一覧を管理
@@ -18,12 +18,6 @@ namespace PLC_Connection
         /// </summary>
         private Queue<WorkData> insideWorks = null;
 
-        private WorkData lastCheckWork = null;
-
-        public WorkData CheckedWork
-        {
-            get { return lastCheckWork; }
-        }
 
         public WorkController()
         {
@@ -39,12 +33,12 @@ namespace PLC_Connection
         /// <returns> 作成したUPDATE文 </returns>
         /// TODO エラー時の返り値等を決めておく
 
-        public string ProcessToSql(CommonParameters.Process_Number progressNum, TimeSpan nowTime)
+        public void ProcessToSql(CommonParameters.Process_Number progressNum, TimeSpan nowTime)
         {
             //TODO プロセス番号も列挙型で管理するようにする
             DateTime? startTime = null;
             /* 搬出工程が行われたら、管理キューから1つ破棄する */
-            if (progressNum == CommonParameters.Process_Number.Carry_out)
+            if (progressNum == CommonParameters.Process_Number.Finish)
             {
                 startTime = insideWorks.Dequeue().startTime;
             }
@@ -57,28 +51,23 @@ namespace PLC_Connection
                     {
                         e.progressNum = progressNum;
                         startTime = e.startTime;
-                        if (progressNum == CommonParameters.Process_Number.Shoot_End)
-                        {
-                            lastCheckWork = e;
-                        }
                         break;
                     }
-                    return null;
                 }
             }
-            return String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in BETWEEN '{2}' AND '{3}'",
-                    CommonParameters.TIME_COLUMNAMES[(int)progressNum], nowTime, startTime, startTime + TimeSpan.FromSeconds(1));
+            DatabaseController.ExecSQL(String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in BETWEEN '{2}' AND '{3}'",
+                    CommonParameters.TIME_COLUMNAMES[(int)progressNum], nowTime, startTime, startTime + TimeSpan.FromSeconds(1)));
         }
 
         /// <summary>
         /// 　新しいワークが搬入された時に管理対象に追加する
         /// </summary>
         /// <param name="startTime">　搬入された時刻　</param>
-        public string AddnewWork(DateTime startTime)
+        public void AddnewWork(DateTime startTime)
         {
-            insideWorks.Enqueue(new WorkData(startTime, 0));
-            return String.Format("INSERT INTO Test_CycleTime ({2}) VALUES ('{0}.{1:D3}')",
-                startTime, startTime.Millisecond, CommonParameters.TIME_COLUMNAMES[0]);
+            insideWorks.Enqueue(new WorkData(startTime, CommonParameters.Process_Number.Supply));
+            DatabaseController.ExecSQL(String.Format("INSERT INTO Test_CycleTime ({2}) VALUES ('{0}.{1:D3}')",
+                startTime, startTime.Millisecond, CommonParameters.TIME_COLUMNAMES[0]));
         }
 
     }

@@ -48,7 +48,7 @@ namespace PLC_Connection.Modules
                     ("SELECT cycle_code FROM Test_CycleTime WHERE Carry_in BETWEEN '{0}' and '{1}'",
                     this.startTime, startTime + TimeSpan.FromSeconds(1));
 
-                if (DatabaseController.GetOneParameter<int?>(getCycleCodeSql, ref cycle_code))
+                if (DatabaseController.GetOneParameter(getCycleCodeSql, ref cycle_code))
                 {
                     return cycle_code;
                 }
@@ -74,7 +74,7 @@ namespace PLC_Connection.Modules
                 string getWorkIDSql = String.Format
                     ("SELECT ID FROM Test_Data WHERE Cycle_Code = {0}", cycle_code);
 
-                if (DatabaseController.GetOneParameter<int?>(getWorkIDSql, ref id))
+                if (DatabaseController.GetOneParameter(getWorkIDSql, ref id))
                     return id;
                 else
                 {

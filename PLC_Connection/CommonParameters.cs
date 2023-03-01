@@ -25,16 +25,11 @@ namespace PLC_Connection
         public enum Process_Number
         {
             NO_CHECK = -1,
-            Carry_in,
-            Position,
-            Shoot_Start,
-            Shoot_End,
-            Ready,
-            Arm1,
-            Stand,
-            Arm2,
-            Installation,
-            Carry_out
+            Supply,
+            VisualStation_in,
+            FunctionStation_in,
+            Assembly_in,
+            Finish
         }
 
         /// <summary>
