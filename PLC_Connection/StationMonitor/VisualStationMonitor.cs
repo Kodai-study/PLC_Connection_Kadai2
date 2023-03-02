@@ -3,9 +3,6 @@ using ResultDatas;
 using System;
 using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PLC_Connection.StationMonitor
 {
@@ -63,19 +60,19 @@ namespace PLC_Connection.StationMonitor
             }
             Console.WriteLine(visualInspectionResult);
 
-            WorkData checkedWork = workController.getFunctionCheckedWork();
+            WorkData checkedWork = workController.GetFunctionCheckedWork();
 
             if (checkedWork == null)
                 return;
 
-            foreach (var e in visualInspectionResult.getErrorCodes())
+            foreach (var errorCode in visualInspectionResult.getErrorCodes())
             {
-                string insertErrorCodeSql = String.Format("INSERT INTO Test_Result(ID,result_Code) VALUES ({0},'{1}')",
-                  checkedWork.WorkID, e);
-                Console.WriteLine(insertErrorCodeSql);
+                string insertErrorCodeSql = String.Format("INSERT INTO VisalST (No,result_Code) VALUES ({0},{1})",
+                  checkedWork.WorkID, errorCode);
                 DatabaseController.ExecSQL(insertErrorCodeSql);
             }
             checkedWork.IsVisualInspected = true;
+            visualInspectionResult.getErrorCodes();
         }
     }
 }

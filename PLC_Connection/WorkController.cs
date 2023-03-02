@@ -1,9 +1,6 @@
 ﻿using PLC_Connection.Modules;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PLC_Connection
 {
@@ -18,9 +15,6 @@ namespace PLC_Connection
         /// </summary>
         private Queue<WorkData> insideWorks = null;
 
-        
-
-
         public WorkController()
         {
             insideWorks = new Queue<WorkData>();
@@ -33,16 +27,13 @@ namespace PLC_Connection
         /// <see cref="CommonParameters.Bit_X.getProgressNum(int, bool, ref int)"/>
         /// <param name="nowTime"> センサが反応した時刻 </param>
         /// <returns> 作成したUPDATE文 </returns>
-        /// TODO エラー時の返り値等を決めておく
-
-        public void ProcessToSql(CommonParameters.Process_Number progressNum, TimeSpan nowTime)
+        public void ProcessToSql(CommonParameters.Process_Number progressNum, DateTime nowTime)
         {
-            //TODO プロセス番号も列挙型で管理するようにする
-            DateTime? startTime = null;
+            WorkData targetWork = null;
             /* 搬出工程が行われたら、管理キューから1つ破棄する */
-            if (progressNum == CommonParameters.Process_Number.Finish)
+            if (progressNum == CommonParameters.Process_Number.Assembly_end)
             {
-                startTime = insideWorks.Dequeue().startTime;
+                RemoveWork(nowTime);
             }
             else
             {
@@ -52,13 +43,13 @@ namespace PLC_Connection
                     if (progressNum > e.progressNum)
                     {
                         e.progressNum = progressNum;
-                        startTime = e.startTime;
+                        targetWork = e;
                         break;
                     }
                 }
             }
-            DatabaseController.ExecSQL(String.Format("UPDATE Test_CycleTime SET {0} = '{1}' WHERE Carry_in BETWEEN '{2}' AND '{3}'",
-                    CommonParameters.TIME_COLUMNAMES[(int)progressNum], nowTime, startTime, startTime + TimeSpan.FromSeconds(1)));
+            DatabaseController.ExecSQL(String.Format("UPDATE SensorTimeT SET {0} = '{1}.{2:D3}' WHERE No = {3}",
+                    CommonParameters.TIME_COLUMNAMES[(int)progressNum], nowTime, nowTime.Millisecond, targetWork.WorkID));
         }
 
         /// <summary>
@@ -68,11 +59,19 @@ namespace PLC_Connection
         public void AddnewWork(DateTime startTime)
         {
             insideWorks.Enqueue(new WorkData(startTime, CommonParameters.Process_Number.Supply));
-            DatabaseController.ExecSQL(String.Format("INSERT INTO Test_CycleTime ({2}) VALUES ('{0}.{1:D3}')",
-                startTime, startTime.Millisecond, CommonParameters.TIME_COLUMNAMES[0]));
+            DatabaseController.ExecSQL(String.Format("INSERT INTO SensorTimeT (Supply) VALUES ({0}.{1:D3}))",
+                startTime, startTime.Millisecond));
         }
 
-        public WorkData getVisualCheckedWork()
+        public void RemoveWork(DateTime changedTime)
+        {
+            WorkData targetWork = insideWorks.Dequeue();
+            DatabaseController.ExecSQL(String.Format("UPDATE SensorTimeT SET Assembly_end = '{0}.{1:D3}' WHERE No = {2}",
+                changedTime, changedTime.Millisecond, targetWork.WorkID));
+
+        }
+
+        public WorkData GetVisualCheckedWork()
         {
             foreach (var e in insideWorks)
             {
@@ -84,7 +83,8 @@ namespace PLC_Connection
             return null;
         }
 
-        public WorkData getFunctionCheckedWork() {
+        public WorkData GetFunctionCheckedWork()
+        {
             foreach (var e in insideWorks)
             {
                 if (!e.IsFunctionInspected && e.progressNum >= CommonParameters.Process_Number.FunctionStation_in)

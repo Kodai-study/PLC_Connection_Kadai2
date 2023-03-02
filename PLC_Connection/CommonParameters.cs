@@ -14,8 +14,8 @@ namespace PLC_Connection
         /// </summary>
         public static readonly string[] TIME_COLUMNAMES =
         {
-            "Carry_in", "Position", "Shoot_S", "Shoot_E",
-               "Ready", "Arm1", "Stand", "Arm2", "Installation","Carry_out"
+            "Supply", "Visal_in", "Functional_in", "Assembly_in",
+               "Assembly_end"
         };
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace PLC_Connection
             VisualStation_in,
             FunctionStation_in,
             Assembly_in,
-            Finish
+            Assembly_end
         }
 
         /// <summary>

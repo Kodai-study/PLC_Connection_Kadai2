@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace PLC_Connection.StationMonitor
 {
-    public class FunctionStationMonitor : Base_StationMonitor
+    public class AssemblyStationMonitor : Base_StationMonitor
     {
 
         private int numberOfWork = 0;
 
-        public FunctionStationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
+        public AssemblyStationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
 
         }
@@ -37,22 +37,6 @@ namespace PLC_Connection.StationMonitor
             }
         }
 
-        public void GetFunctionalInspectionResult()
-        {
-            WorkData checkedWork = workController.GetFunctionCheckedWork();
-
-            if (checkedWork == null)
-                return;
-
-            int volt = 0;
-            int freqency = 0;
-
-            string insertErrorCodeSql = String.Format("INSERT INTO FunctionalST (No,Volt,Freq) VALUES  ({0},{1},{2})",
-                checkedWork.WorkID, volt, freqency);
-            DatabaseController.ExecSQL(insertErrorCodeSql);
-
-            checkedWork.IsVisualInspected = true;
-        }
 
     }
 }

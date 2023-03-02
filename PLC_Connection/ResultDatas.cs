@@ -87,7 +87,7 @@ namespace ResultDatas
         {
             List<string> errors = new List<string>();
             List<string> buf;
-            if((buf = parts_work.GetErrorCodes()) != null)
+            if ((buf = parts_work.GetErrorCodes()) != null)
                 errors.AddRange(buf);
             if ((buf = parts_ic.GetErrorCodes()) != null)
                 errors.AddRange(buf);
@@ -167,7 +167,7 @@ namespace ResultDatas
 
         /* 部品管理のインタフェース、Parts のメソッドの実装
          * 検査項目それぞれに対して、OK,NGを表示する。 */
-         
+
         string Parts.GetResultString()
         {
             StringBuilder str = new StringBuilder("IC : ");
@@ -188,7 +188,7 @@ namespace ResultDatas
         List<string> Parts.GetErrorCodes()
         {
             //返却するリスト変数。初期値NULLで、エラーがあるとインスタンス化され、リストにコードが格納される
-            List<string> errors = null;     
+            List<string> errors = null;
             if (IC1_DIR == CHECK_RESULT.NG)
             {
                 errors = new List<string>();
@@ -200,7 +200,8 @@ namespace ResultDatas
                     errors = new List<string>();
                 errors.Add(errorCodes[1]);
             }
-            if(IC2_DIR == CHECK_RESULT.NG){
+            if (IC2_DIR == CHECK_RESULT.NG)
+            {
                 if (errors == null)
                     errors = new List<string>();
                 errors.Add(errorCodes[3]);
@@ -443,4 +444,5 @@ namespace ResultDatas
             return errors;
         }
     }
+
 }
