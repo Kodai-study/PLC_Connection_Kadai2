@@ -81,6 +81,7 @@
     <Compile Include="PLC_monitorTask.cs" />
     <Compile Include="ResultDataCreater.cs" />
     <Compile Include="StationMonitor\AssemblyStationMonitor.cs" />
+    <Compile Include="StationMonitor\OverAllSystemMonitor.cs" />
     <Compile Include="StationMonitor\FunctionStationMonitor.cs" />
     <Compile Include="StationMonitor\Base_StationMonitor.cs" />
     <Compile Include="StationMonitor\SupplyURMonitor.cs" />

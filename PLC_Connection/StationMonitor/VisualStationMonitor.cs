@@ -11,6 +11,8 @@ namespace PLC_Connection.StationMonitor
 
         private int numberOfWork = 0;
 
+        private readonly TimeSpan delayTime = new TimeSpan(0, 0, 5);
+
         private ResultDataCreater[] resultCreaters = new ResultDataCreater[] {
             new VisualInspectionResultCreater_X41(),
             new VisualInspectionResultCreater_X42(),
@@ -18,10 +20,11 @@ namespace PLC_Connection.StationMonitor
             new VisualInspectionResultCreater_X44()
         };
 
-        DateTime lastInspectedTime;
+        DateTime? lastInspectedTime = null;
 
         public VisualStationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
+            UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_VISUAL_STATION, numberOfWork);
         }
 
         override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
@@ -34,8 +37,8 @@ namespace PLC_Connection.StationMonitor
                     if (e.bitNumber == 0 && e.IsStundUp)
                     {
                         GetVisualInspectionResult();
-                        lastInspectedTime = DateTime.Now;
-                        UpdateStationState(MEMORY_SPACE.IS_INSPECTED_JUST_BEFORE, 1);
+                        lastInspectedTime = checkedTime;
+                        UpdateStationState(MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE, 1);
                     }
                     else if (e.bitNumber == 1)
                     {
@@ -43,9 +46,10 @@ namespace PLC_Connection.StationMonitor
                     }
                 }
             }
-            if (lastInspectedTime + new TimeSpan(0, 0, 5) < DateTime.Now)
+            if (lastInspectedTime != null && lastInspectedTime + delayTime < checkedTime)
             {
-                UpdateStationState(MEMORY_SPACE.IS_INSPECTED_JUST_BEFORE, 0);
+                UpdateStationState(MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE, 0);
+                lastInspectedTime = null;
             }
         }
 
@@ -60,7 +64,7 @@ namespace PLC_Connection.StationMonitor
             }
             Console.WriteLine(visualInspectionResult);
 
-            WorkData checkedWork = workController.GetFunctionCheckedWork();
+            WorkData checkedWork = workController.GetVisualCheckedWork();
 
             if (checkedWork == null)
                 return;
@@ -73,6 +77,12 @@ namespace PLC_Connection.StationMonitor
             }
             checkedWork.IsVisualInspected = true;
             visualInspectionResult.getErrorCodes();
+        }
+
+        public void RemoveWork()
+        {
+            numberOfWork--;
+            UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_VISUAL_STATION, numberOfWork);
         }
     }
 }

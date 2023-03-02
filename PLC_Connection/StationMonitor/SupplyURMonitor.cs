@@ -20,7 +20,7 @@ namespace PLC_Connection.StationMonitor
                 {
                     if (e.bitNumber == 0 && e.IsStundUp)
                     {
-                        UpdateStationState(MEMORY_SPACE.IS_INSPECTED_JUST_BEFORE, 1);
+                        UpdateStationState(MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE, 1);
                     }
                     else if (e.bitNumber == 1)
                     {
@@ -29,6 +29,7 @@ namespace PLC_Connection.StationMonitor
                 }
             }
         }
+
 
     }
 }
