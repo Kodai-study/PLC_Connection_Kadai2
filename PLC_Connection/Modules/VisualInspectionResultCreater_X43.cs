@@ -12,7 +12,7 @@ namespace PLC_Connection.Modules
     /// <summary>
     ///   X430～X43Fまでのビットブロックの管理を行う
     /// </summary>
-    public class BlockToResultChanger_X43 : ResultDataCreater
+    public class VisualInspectionResultCreater_X43 : ResultDataCreater
     {
         /// <summary> DIPスイッチの4つ目の状態を表すビット。1だとONになっている </summary>
         public const int DIP_SW4 = 0b0010000000000000;

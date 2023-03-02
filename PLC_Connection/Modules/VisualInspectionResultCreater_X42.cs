@@ -13,7 +13,7 @@ namespace PLC_Connection.Modules
     /// <summary>
     ///   X420～X42Fまでのビットブロックの管理を行う
     /// </summary>
-    public class BlockToResultChanger_X42 : ResultDataCreater
+    public class VisualInspectionResultCreater_X42 : ResultDataCreater
     {
         /// <summary> ICが正常だったら立つビット </summary>
         public const int IC2_OK = 0b0000000000100000;

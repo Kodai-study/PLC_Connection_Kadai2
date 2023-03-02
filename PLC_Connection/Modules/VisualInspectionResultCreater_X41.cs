@@ -10,7 +10,7 @@ namespace PLC_Connection.Modules
     /// <summary>
     ///   X410～X41Fまでのビットブロックの管理を行う
     /// </summary>
-    public class BlockToResultChanger_X41 : ResultDataCreater
+    public class VisualInspectionResultCreater_X41 : ResultDataCreater
     {
         /// <summary> ワークが正常だった時の </summary>
         public const int WORK_OK = 0b0000000000000010;

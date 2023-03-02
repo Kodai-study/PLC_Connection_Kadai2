@@ -19,7 +19,7 @@ namespace PLC_Connection.StationMonitor
 
         }
 
-        override public void CheckData(PLCContactData plcDatas)
+        override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
         {
             if (plcDatas.X40_Block.IsAnyBitStundUp)
             {
@@ -27,6 +27,7 @@ namespace PLC_Connection.StationMonitor
                 foreach (var e in changeData)
                 {
                     // 検査終了等のデータを読み取る
+                    workController.RemoveWork(checkedTime);
                 }
 
                 /*

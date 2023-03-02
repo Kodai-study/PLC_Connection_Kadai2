@@ -16,14 +16,13 @@ namespace PLC_Connection.StationMonitor
         protected WorkController workController;
         protected MemoryMappedViewAccessor commonMemoryAccessor;
         private int[] writeMemoryStartAddress = new int[(int)MEMORY_SPACE.NUMNER_OF_STATE_KIND];
-
+        protected DateTime checkedTime = DateTime.MinValue;
 
         public Base_StationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor)
         {
             this.plc_MonitorTask = plc_MonitorTask;
             this.workController = workController;
             this.commonMemoryAccessor = commonMemoryAccessor;
-
             int sizeOfInt32 = sizeof(int);
             int sizeOfBoolean = sizeof(bool);
             int headAddress = 0;
@@ -42,7 +41,7 @@ namespace PLC_Connection.StationMonitor
             writeMemoryStartAddress[(int)MEMORY_SPACE.STATE_OF_ASSEMBLY_STATION] = (headAddress += sizeOfInt32);
         }
 
-        public abstract void CheckData(PLCContactData plcDatas);
+        public abstract void CheckData(PLCContactData plcDatas, DateTime checkedTime);
 
         protected void UpdateStationState(MEMORY_SPACE kindOfState, int value)
         {

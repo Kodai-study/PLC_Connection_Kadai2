@@ -13,7 +13,7 @@ namespace PLC_Connection
         ///  ステーション内にあるワークの一覧を管理
         ///  (検査終了、搬出でキューから無くなる)
         /// </summary>
-        private Queue<WorkData> insideWorks = null;
+        private readonly Queue<WorkData> insideWorks = null;
 
         public WorkController()
         {
@@ -27,7 +27,7 @@ namespace PLC_Connection
         /// <see cref="CommonParameters.Bit_X.getProgressNum(int, bool, ref int)"/>
         /// <param name="nowTime"> センサが反応した時刻 </param>
         /// <returns> 作成したUPDATE文 </returns>
-        public void ProcessToSql(CommonParameters.Process_Number progressNum, DateTime nowTime)
+        public void WriteProcesChangeData(CommonParameters.Process_Number progressNum, DateTime nowTime)
         {
             WorkData targetWork = null;
             /* 搬出工程が行われたら、管理キューから1つ破棄する */

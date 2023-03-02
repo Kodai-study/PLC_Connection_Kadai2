@@ -7,16 +7,11 @@ namespace PLC_Connection.StationMonitor
 {
     public class SupplyURMonitor : Base_StationMonitor
     {
-
-        private int numberOfWork = 0;
-
-        DateTime lastInspectedTime;
-
         public SupplyURMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
         }
 
-        override public void CheckData(PLCContactData plcDatas)
+        override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
         {
             if (plcDatas.X40_Block.IsAnyBitStundUp)
             {
@@ -29,13 +24,9 @@ namespace PLC_Connection.StationMonitor
                     }
                     else if (e.bitNumber == 1)
                     {
-
+                        workController.AddnewWork(checkedTime);
                     }
                 }
-            }
-            if(lastInspectedTime + new TimeSpan(0,0,5) < DateTime.Now)
-            {
-                UpdateStationState(MEMORY_SPACE.IS_INSPECTED_JUST_BEFORE, 0);
             }
         }
 

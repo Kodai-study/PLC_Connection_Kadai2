@@ -12,10 +12,10 @@ namespace PLC_Connection.StationMonitor
         private int numberOfWork = 0;
 
         private ResultDataCreater[] resultCreaters = new ResultDataCreater[] {
-            new BlockToResultChanger_X41(),
-            new BlockToResultChanger_X42(),
-            new BlockToResultChanger_X43(),
-            new BlockToResultChanger_X44()
+            new VisualInspectionResultCreater_X41(),
+            new VisualInspectionResultCreater_X42(),
+            new VisualInspectionResultCreater_X43(),
+            new VisualInspectionResultCreater_X44()
         };
 
         DateTime lastInspectedTime;
@@ -24,7 +24,7 @@ namespace PLC_Connection.StationMonitor
         {
         }
 
-        override public void CheckData(PLCContactData plcDatas)
+        override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
         {
             if (plcDatas.X40_Block.IsAnyBitStundUp)
             {
@@ -39,11 +39,11 @@ namespace PLC_Connection.StationMonitor
                     }
                     else if (e.bitNumber == 1)
                     {
-
+                        workController.WriteProcesChangeData(CommonParameters.Process_Number.VisualStation_in, checkedTime);
                     }
                 }
             }
-            if(lastInspectedTime + new TimeSpan(0,0,5) < DateTime.Now)
+            if (lastInspectedTime + new TimeSpan(0, 0, 5) < DateTime.Now)
             {
                 UpdateStationState(MEMORY_SPACE.IS_INSPECTED_JUST_BEFORE, 0);
             }

@@ -74,10 +74,10 @@
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
     <Compile Include="Modules\WorkData.cs" />
-    <Compile Include="Modules\BlockToResultChanger_X43.cs" />
-    <Compile Include="Modules\BlockToResultChanger_X44.cs" />
-    <Compile Include="Modules\BlockToResultChanger_X42.cs" />
-    <Compile Include="Modules\BlockToResultChanger_X41.cs" />
+    <Compile Include="Modules\VisualInspectionResultCreater_X43.cs" />
+    <Compile Include="Modules\VisualInspectionResultCreater_X44.cs" />
+    <Compile Include="Modules\VisualInspectionResultCreater_X42.cs" />
+    <Compile Include="Modules\VisualInspectionResultCreater_X41.cs" />
     <Compile Include="PLC_monitorTask.cs" />
     <Compile Include="ResultDataCreater.cs" />
     <Compile Include="StationMonitor\AssemblyStationMonitor.cs" />

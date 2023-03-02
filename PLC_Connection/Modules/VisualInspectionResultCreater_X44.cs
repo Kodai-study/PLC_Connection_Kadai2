@@ -11,7 +11,7 @@ namespace PLC_Connection.Modules
     /// <summary>
     ///   X440～X44Fまでのビットブロックの管理を行う
     /// </summary>
-    public class BlockToResultChanger_X44 : ResultDataCreater
+    public class VisualInspectionResultCreater_X44 : ResultDataCreater
     {
         /// <summary> 電池ソケットの向きが正しいかどうか </summary>
         public const int SOCKET_DIR = 0b0000000000001000;
