@@ -1,6 +1,4 @@
-﻿using ResultDatas;
-
-namespace PLC_Connection
+﻿namespace PLC_Connection
 {
     /// <summary>
     ///  いろいろな固定値を保存しておく、

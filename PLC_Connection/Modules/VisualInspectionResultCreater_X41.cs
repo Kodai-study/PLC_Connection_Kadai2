@@ -1,4 +1,4 @@
-﻿using ResultDatas;
+﻿using PLC_Connection.InspectionResultDataModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,5 +56,7 @@ namespace PLC_Connection.Modules
             else
                 checkResults.ic.IC1_DIR = CHECK_RESULT.NG;
         }
+
+
     }
 }

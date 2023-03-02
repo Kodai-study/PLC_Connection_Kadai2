@@ -1,5 +1,5 @@
 ﻿using PLC_Connection.Modules;
-using ResultDatas;
+using PLC_Connection.InspectionResultDataModel;
 using System;
 using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;

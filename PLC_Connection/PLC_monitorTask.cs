@@ -1,7 +1,7 @@
 ﻿using MITSUBISHI.Component;
 using PLC_Connection.Modules;
 using PLC_Connection.StationMonitor;
-using ResultDatas;
+using PLC_Connection.InspectionResultDataModel;
 using System;
 using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;

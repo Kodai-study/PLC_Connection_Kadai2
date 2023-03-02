@@ -73,6 +73,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="InspectionResultDataModel\BAT_SOCKET.cs" />
+    <Compile Include="InspectionResultDataModel\DIODE.cs" />
+    <Compile Include="InspectionResultDataModel\DIP_SW.cs" />
+    <Compile Include="InspectionResultDataModel\IC.cs" />
+    <Compile Include="InspectionResultDataModel\Parts.cs" />
+    <Compile Include="InspectionResultDataModel\RESISTOR.cs" />
+    <Compile Include="InspectionResultDataModel\TR.cs" />
+    <Compile Include="InspectionResultDataModel\WORK.cs" />
     <Compile Include="Modules\VisualInspectionResultCreater_X45.cs" />
     <Compile Include="Modules\WorkData.cs" />
     <Compile Include="Modules\VisualInspectionResultCreater_X43.cs" />
@@ -91,7 +99,7 @@
     <Compile Include="Modules\PLCContactData.cs" />
     <Compile Include="WorkController.cs" />
     <Compile Include="DatabaseControllr.cs" />
-    <Compile Include="ResultDatas.cs" />
+    <Compile Include="InspectionResultDataModel\ResultDatas.cs" />
     <Compile Include="CommonParameters.cs" />
     <None Include="Old_PLC_monitorTask.cs" />
     <Compile Include="MainTask.cs" />

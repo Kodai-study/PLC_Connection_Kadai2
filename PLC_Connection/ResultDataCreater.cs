@@ -1,4 +1,4 @@
-﻿using ResultDatas;
+﻿using PLC_Connection.InspectionResultDataModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
