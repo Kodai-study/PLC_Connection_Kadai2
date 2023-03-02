@@ -60,6 +60,12 @@ namespace PLC_Connection.Modules
 
             return changeBitDataList;
         }
+        public List<ChangeBitData> ChangedDatas(params int[] filterBits)
+        {
+            List<ChangeBitData> changeBitDataList = new List<ChangeBitData>();
+            changeBitDataList.FindAll(e => { return filterBits.Contains(e.bitNumber); });
+            return changeBitDataList;
+        }
 
         public class ChangeBitData
         {

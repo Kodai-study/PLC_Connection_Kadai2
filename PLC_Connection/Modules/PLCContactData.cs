@@ -8,6 +8,7 @@ namespace PLC_Connection.Modules
 {
     public class PLCContactData
     {
+        DataBlock X00_blockData = new DataBlock();
         DataBlock Y31_blockData = new DataBlock();
         DataBlock Y33_blockData = new DataBlock();
         DataBlock Y34_blockData = new DataBlock();
@@ -18,6 +19,7 @@ namespace PLC_Connection.Modules
         DataBlock X44_blockData = new DataBlock();
         DataBlock X45_blockData = new DataBlock();
 
+       public DataBlock X00_Block { get { return X00_blockData; } }
        public DataBlock Y31_Block { get { return Y31_blockData; } }
        public DataBlock Y33_Block { get { return Y33_blockData; } }
        public DataBlock Y34_Block { get { return Y34_blockData; } }

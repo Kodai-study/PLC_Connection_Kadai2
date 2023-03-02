@@ -13,6 +13,12 @@ namespace PLC_Connection.StationMonitor
 
         private readonly TimeSpan delayTime = new TimeSpan(0, 0, 5);
 
+        /// <summary> 搬入コンベアの入口のセンサ部分 </summary>
+        public const int IN_CONVARE_FIRST = 0b0000000000010000;
+
+        /// <summary> 搬入コンベアの出口のセンサ部分 </summary>
+        public const int OUT_CONVARE_END = 0b0000001000000000;
+
         private ResultDataCreater[] resultCreaters = new ResultDataCreater[] {
             new VisualInspectionResultCreater_X41(),
             new VisualInspectionResultCreater_X42(),
@@ -29,6 +35,19 @@ namespace PLC_Connection.StationMonitor
 
         override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
         {
+            if (plcDatas.X00_Block.IsAnyBitStundUp)
+            {
+                foreach(var e in plcDatas.X00_Block.ChangedDatas()) {
+                    if(e.bitNumber== 4 && e.IsStundUp)
+                    {
+                        numberOfWork++;
+                        UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_VISUAL_STATION, numberOfWork);
+                        workController.WriteProcesChangeData(
+                            CommonParameters.Process_Number.VisualStation_in, checkedTime);
+                    }
+                }
+            }
+
             if (plcDatas.X40_Block.IsAnyBitStundUp)
             {
                 List<DataBlock.ChangeBitData> changeData = plcDatas.X40_Block.ChangedDatas();
@@ -39,10 +58,6 @@ namespace PLC_Connection.StationMonitor
                         GetVisualInspectionResult();
                         lastInspectedTime = checkedTime;
                         UpdateStationState(MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE, 1);
-                    }
-                    else if (e.bitNumber == 1)
-                    {
-                        workController.WriteProcesChangeData(CommonParameters.Process_Number.VisualStation_in, checkedTime);
                     }
                 }
             }
@@ -63,7 +78,6 @@ namespace PLC_Connection.StationMonitor
                     resultBlock[i]);
             }
             Console.WriteLine(visualInspectionResult);
-
             WorkData checkedWork = workController.GetVisualCheckedWork();
 
             if (checkedWork == null)

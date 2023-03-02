@@ -1,11 +1,8 @@
 ﻿using MITSUBISHI.Component;
 using PLC_Connection.Modules;
 using PLC_Connection.StationMonitor;
-using PLC_Connection.InspectionResultDataModel;
 using System;
-using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,7 +40,7 @@ namespace PLC_Connection
 
         public PLC_MonitorTask()
         {
-            MemoryMappedFile share_mem = MemoryMappedFile.OpenExisting("shared_memory");
+            MemoryMappedFile share_mem = MemoryMappedFile.CreateNew("shared_memory",4 * (int)MEMORY_SPACE.NUMNER_OF_STATE_KIND);
             MemoryMappedViewAccessor accessor = share_mem.CreateViewAccessor();
             accessor.Write(0, 1);
             visualStationMonitor = new VisualStationMonitor(this, workController, accessor);
@@ -68,7 +65,7 @@ namespace PLC_Connection
                 return false;
 
 
-            if (!DatabaseController.DBConnection())
+            if (!DatabaseController.DBConnection("Data Source=tcp:192.168.96.69,54936;Initial Catalog=Robot22_2DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"))
             {
                 dotUtlType.Close();
                 return false;
@@ -96,18 +93,21 @@ namespace PLC_Connection
             string label = "Y31";
             int[] blockData_y41 = new int[4];
             Console.WriteLine("PLCの読み取り開始");
-
+            int testData = 0;
             //キャンセル要求されるまで無限ループ
             while (!token.IsCancellationRequested)
             {
                 DateTime now = DateTime.Now;
                 dotUtlType.ReadDeviceBlock(ref label, 4, ref blockData_y41);
-                plcData.Y31_Block.NewBlockData = blockData_y41[0];
-                plcData.Y33_Block.NewBlockData = blockData_y41[2];
-                plcData.Y34_Block.NewBlockData = blockData_y41[3];
+               // plcData.Y31_Block.NewBlockData = blockData_y41[0];
+               // plcData.Y33_Block.NewBlockData = blockData_y41[2];
+               // plcData.Y34_Block.NewBlockData = blockData_y41[3];
 
-                visualStationMonitor.CheckData(plcData, now);
-                functionStationMonitor.CheckData(plcData, now);
+                plcData.X00_Block.NewBlockData = testData;
+                testData++;
+
+                //visualStationMonitor.CheckData(plcData, now);
+                //functionStationMonitor.CheckData(plcData, now);
 
 
                 Thread.Sleep(10);

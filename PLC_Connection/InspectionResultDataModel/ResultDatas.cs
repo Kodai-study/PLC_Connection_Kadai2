@@ -56,6 +56,8 @@ namespace PLC_Connection.InspectionResultDataModel
         private Parts parts_battery;
         private Parts parts_diode;
 
+        public bool result_AllOK { get; set; } = false;
+
         /// <summary>
         ///  デバッグ、見せる用。
         ///  結果を文字列で表示する
@@ -105,6 +107,7 @@ namespace PLC_Connection.InspectionResultDataModel
             if (errors.Count == 0)
             {
                 errors.Add("OK   ");
+                result_AllOK = true;
             }
             return errors;
         }
