@@ -47,7 +47,7 @@ namespace PLC_Connection
             MemoryMappedViewAccessor accessor = share_mem.CreateViewAccessor();
             accessor.Write(0, 1);
             visualStationMonitor = new VisualStationMonitor(this, workController, accessor);
-            functionStationMonitor = new FunctionStationMonitor(this, workController, accessor);
+            functionStationMonitor = new FunctionStationMonitor(this, workController, accessor, (VisualStationMonitor)visualStationMonitor);
         }
 
         /// <summary>
@@ -100,14 +100,14 @@ namespace PLC_Connection
             //キャンセル要求されるまで無限ループ
             while (!token.IsCancellationRequested)
             {
-
+                DateTime now = DateTime.Now;
                 dotUtlType.ReadDeviceBlock(ref label, 4, ref blockData_y41);
                 plcData.Y31_Block.NewBlockData = blockData_y41[0];
                 plcData.Y33_Block.NewBlockData = blockData_y41[2];
                 plcData.Y34_Block.NewBlockData = blockData_y41[3];
 
-                visualStationMonitor.CheckData(plcData);
-                functionStationMonitor.CheckData(plcData);
+                visualStationMonitor.CheckData(plcData, now);
+                functionStationMonitor.CheckData(plcData, now);
 
 
                 Thread.Sleep(10);

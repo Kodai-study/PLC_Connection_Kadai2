@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActDefine.cs" />
+    <Compile Include="Modules\VisualInspectionResultCreater_X45.cs" />
     <Compile Include="Modules\WorkData.cs" />
     <Compile Include="Modules\VisualInspectionResultCreater_X43.cs" />
     <Compile Include="Modules\VisualInspectionResultCreater_X44.cs" />

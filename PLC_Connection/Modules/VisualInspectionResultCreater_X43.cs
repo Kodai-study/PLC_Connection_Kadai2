@@ -38,8 +38,6 @@ namespace PLC_Connection.Modules
                 checkResults.dipSwitch.DIP_OK = CHECK_RESULT.NG;
 
             int pattern = 0;
-
-            //TODO スイッチの論理が逆なので直してもらう
             if ((bitData & DIP_SW1) == 0)
                 pattern |= 1;
             if ((bitData & DIP_SW2) == 0)
