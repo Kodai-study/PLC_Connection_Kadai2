@@ -34,6 +34,7 @@ namespace PLC_Connection.StationMonitor
             writeMemoryStartAddress[(int)MEMORY_SPACE.IS_SYSTEM_PAUSE] = (headAddress += sizeOfInt32);
             writeMemoryStartAddress[(int)MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE] = (headAddress += sizeOfBoolean);
             writeMemoryStartAddress[(int)MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE] = (headAddress += sizeOfBoolean);
+            writeMemoryStartAddress[(int)MEMORY_SPACE.RESULT_VISUAL_INSPECTION] = (headAddress += sizeOfBoolean);
             writeMemoryStartAddress[(int)MEMORY_SPACE.RESULT_FREQUENCY] = (headAddress += sizeOfBoolean);
             writeMemoryStartAddress[(int)MEMORY_SPACE.RESULT_VOLTAGE] = (headAddress += sizeOfInt32);
             writeMemoryStartAddress[(int)MEMORY_SPACE.STATE_OF_OVERALL_SYSTEM] = (headAddress += sizeOfInt32);
@@ -45,11 +46,12 @@ namespace PLC_Connection.StationMonitor
 
         public abstract void CheckData(PLCContactData plcDatas, DateTime checkedTime);
 
-        protected void UpdateStationState(MEMORY_SPACE kindOfState, int value)
+        public void UpdateStationState(MEMORY_SPACE kindOfState, int value)
         {
             if (kindOfState == MEMORY_SPACE.IS_SYSTEM_PAUSE ||
                 kindOfState == MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE ||
-                kindOfState == MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE)
+                kindOfState == MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE || 
+                kindOfState == MEMORY_SPACE.RESULT_VISUAL_INSPECTION)
                 commonMemoryAccessor.Write(writeMemoryStartAddress[(int)kindOfState], value != 0);
             else
                 commonMemoryAccessor.Write(writeMemoryStartAddress[(int)kindOfState], value);

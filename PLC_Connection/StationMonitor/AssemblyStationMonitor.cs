@@ -40,7 +40,6 @@ namespace PLC_Connection.StationMonitor
                 UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, numberOfWork);
                 beforeStationMonitor.RemoveWork();
 
-
                 int numberOfStock_OK = 0;
                 int numberOfStock_NG = 0;
                 //ストック数が変化したら

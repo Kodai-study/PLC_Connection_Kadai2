@@ -33,6 +33,9 @@ namespace PLC_Connection
         /// </summary>
         WorkController workController;
 
+        private MemoryMappedViewAccessor accessor;
+        private MemoryMappedFile share_mem;
+
         PLCContactData plcData = new PLCContactData();
         readonly Base_StationMonitor visualStationMonitor;
         readonly Base_StationMonitor functionStationMonitor;
@@ -40,15 +43,14 @@ namespace PLC_Connection
 
         public PLC_MonitorTask()
         {
-            MemoryMappedFile share_mem = MemoryMappedFile.CreateNew("shared_memory",4 * (int)MEMORY_SPACE.NUMNER_OF_STATE_KIND);
-            MemoryMappedViewAccessor accessor = share_mem.CreateViewAccessor();
+            share_mem = MemoryMappedFile.CreateNew("shared_memory",4 * (int)MEMORY_SPACE.NUMNER_OF_STATE_KIND);
+            accessor = share_mem.CreateViewAccessor();
             accessor.Write(0, 1);
             //accessor.Dispose();
 
             visualStationMonitor = new VisualStationMonitor(this, workController, accessor);
             functionStationMonitor = new FunctionStationMonitor(this, workController, accessor, (VisualStationMonitor)visualStationMonitor);
-            accessor.Dispose();
-
+            //accessor.Dispose();
         }
 
         /// <summary>
@@ -110,11 +112,26 @@ namespace PLC_Connection
                // plcData.X00_Block.NewBlockData = testData;
                 testData++;
 
-                visualStationMonitor.CheckData(plcData, now);
+                //visualStationMonitor.CheckData(plcData, now);
                 //functionStationMonitor.CheckData(plcData, now);
-
-
-                Thread.Sleep(10);
+                accessor = share_mem.CreateViewAccessor();
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, testData);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, testData + 1);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_ASSEMBLY_STATION, testData + 2);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.NUMBER_OF_OKSTOCK, testData + 3); ;
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.NUMBER_OF_NGSTOCK, testData + 4);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.IS_SYSTEM_PAUSE, testData % 2);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE, 0);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE, 1);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.RESULT_FREQUENCY, testData + 342);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.RESULT_VOLTAGE, testData + 145); 
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.RESULT_VISUAL_INSPECTION, 1-(testData %2)); 
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.STATE_OF_OVERALL_SYSTEM, (testData + 1) % 5);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.STATE_OF_SUPPLY_ROBOT, (testData + 2) % 5);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.STATE_OF_VISUAL_STATION, (testData + 3) % 5);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.STATE_OF_FUNCTION_STATION, (testData + 4) % 5);
+                visualStationMonitor.UpdateStationState(MEMORY_SPACE.STATE_OF_ASSEMBLY_STATION, (testData + 0) % 5);
+                Thread.Sleep(2000);
             }//キャンセルされるまで続くポーリング処理
 
             Console.WriteLine("スレッドのキャンセル要求が来ました");
