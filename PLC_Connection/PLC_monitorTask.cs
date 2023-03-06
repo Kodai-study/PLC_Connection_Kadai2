@@ -43,8 +43,12 @@ namespace PLC_Connection
             MemoryMappedFile share_mem = MemoryMappedFile.CreateNew("shared_memory",4 * (int)MEMORY_SPACE.NUMNER_OF_STATE_KIND);
             MemoryMappedViewAccessor accessor = share_mem.CreateViewAccessor();
             accessor.Write(0, 1);
+            //accessor.Dispose();
+
             visualStationMonitor = new VisualStationMonitor(this, workController, accessor);
             functionStationMonitor = new FunctionStationMonitor(this, workController, accessor, (VisualStationMonitor)visualStationMonitor);
+            accessor.Dispose();
+
         }
 
         /// <summary>
@@ -65,12 +69,12 @@ namespace PLC_Connection
                 return false;
 
 
-            if (!DatabaseController.DBConnection("Data Source=tcp:192.168.96.69,54936;Initial Catalog=Robot22_2DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"))
+           /* if (!DatabaseController.DBConnection("Data Source=tcp:192.168.96.69,54936;Initial Catalog=Robot22_2DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"))
             {
                 dotUtlType.Close();
                 return false;
             }
-
+           */
             this.cancellToken = new CancellationTokenSource();
             workController = new WorkController();
 
@@ -90,7 +94,7 @@ namespace PLC_Connection
         /// <see cref="PLC_MonitorTask.cancellToken"/>
         public void Run(CancellationTokenSource token)
         {
-            string label = "Y31";
+            string label = "X000";
             int[] blockData_y41 = new int[4];
             Console.WriteLine("PLCの読み取り開始");
             int testData = 0;
@@ -103,10 +107,10 @@ namespace PLC_Connection
                // plcData.Y33_Block.NewBlockData = blockData_y41[2];
                // plcData.Y34_Block.NewBlockData = blockData_y41[3];
 
-                plcData.X00_Block.NewBlockData = testData;
+               // plcData.X00_Block.NewBlockData = testData;
                 testData++;
 
-                //visualStationMonitor.CheckData(plcData, now);
+                visualStationMonitor.CheckData(plcData, now);
                 //functionStationMonitor.CheckData(plcData, now);
 
 

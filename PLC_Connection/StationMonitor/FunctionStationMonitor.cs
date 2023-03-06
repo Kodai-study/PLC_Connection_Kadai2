@@ -22,6 +22,20 @@ namespace PLC_Connection.StationMonitor
             VisualStationMonitor beforeStationMonitor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
             UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, numberOfWork);
+            UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, 1);
+            UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_ASSEMBLY_STATION, 2);
+            UpdateStationState(MEMORY_SPACE.NUMBER_OF_OKSTOCK, 3); ;
+            UpdateStationState(MEMORY_SPACE.NUMBER_OF_NGSTOCK, 4);
+            UpdateStationState(MEMORY_SPACE.IS_SYSTEM_PAUSE, 1);
+            UpdateStationState(MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE, 0);
+            UpdateStationState(MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE, 1);
+            UpdateStationState(MEMORY_SPACE.RESULT_FREQUENCY, 342);
+            UpdateStationState(MEMORY_SPACE.RESULT_VOLTAGE, 145); ;
+            UpdateStationState(MEMORY_SPACE.STATE_OF_OVERALL_SYSTEM, 1);
+            UpdateStationState(MEMORY_SPACE.STATE_OF_SUPPLY_ROBOT, 2);
+            UpdateStationState(MEMORY_SPACE.STATE_OF_VISUAL_STATION, 3);
+            UpdateStationState(MEMORY_SPACE.STATE_OF_FUNCTION_STATION, 4);
+            UpdateStationState(MEMORY_SPACE.STATE_OF_ASSEMBLY_STATION, 0);
             this.beforeStationMonitor = beforeStationMonitor;
         }
 

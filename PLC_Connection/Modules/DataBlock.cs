@@ -45,6 +45,9 @@ namespace PLC_Connection.Modules
         {
             get
             {
+                if (changes == null)
+                    return false;
+
                 foreach (var e in changes)
                 {
                     if (e.IsStundUp)

@@ -48,8 +48,8 @@ namespace PLC_Connection.StationMonitor
         protected void UpdateStationState(MEMORY_SPACE kindOfState, int value)
         {
             if (kindOfState == MEMORY_SPACE.IS_SYSTEM_PAUSE ||
-                kindOfState == MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE || 
-                kindOfState == MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE )
+                kindOfState == MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE ||
+                kindOfState == MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE)
                 commonMemoryAccessor.Write(writeMemoryStartAddress[(int)kindOfState], value != 0);
             else
                 commonMemoryAccessor.Write(writeMemoryStartAddress[(int)kindOfState], value);
