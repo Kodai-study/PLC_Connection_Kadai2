@@ -105,7 +105,9 @@ namespace PLC_Connection
 
                 plcData.X00_Block.NewBlockData = testData;
                 testData++;
-
+                label = "visualStation_StateBlock";
+                dotUtlType.ReadDeviceBlock(ref label, 2, ref blockData_y41);
+                plcData.X40_Block.NewBlockData = blockData_y41[0];
                 //visualStationMonitor.CheckData(plcData, now);
                 //functionStationMonitor.CheckData(plcData, now);
 

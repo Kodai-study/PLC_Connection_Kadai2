@@ -19,7 +19,7 @@ namespace PLC_Connection.StationMonitor
                 List<DataBlock.ChangeBitData> changeData = plcDatas.X40_Block.ChangedDatas();
                 foreach (var e in changeData)
                 {
-                    if (e.bitNumber == 0 && e.IsStundUp)
+                    if (e.bitNumber == 2 && e.IsStundUp)
                     {
                         UpdateStationState(MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE, 1);
                     }
@@ -30,7 +30,6 @@ namespace PLC_Connection.StationMonitor
                 }
             }
         }
-
 
     }
 }

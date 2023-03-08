@@ -9,7 +9,7 @@ namespace PLC_Connection.Modules
     public class DataBlock
     {
         public const int BLOCK_SIZE = 16;
-        private int data;
+        private int blockData;
 
         private int oldData;
         private List<ChangeBitData> changes;
@@ -19,6 +19,8 @@ namespace PLC_Connection.Modules
             set
             {
                 changes = new List<ChangeBitData>();
+                blockData = value;
+                if (oldData== value) return;
                 int checkBit = 1;
                 for (int i = 0; i < BLOCK_SIZE; i++)
                 {
@@ -77,5 +79,7 @@ namespace PLC_Connection.Modules
                 this.IsStundUp = isStundUp;
             }
         }
+
+        public int BlockData { get { return blockData; } }
     }
 }
