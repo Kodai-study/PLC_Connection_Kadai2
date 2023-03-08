@@ -19,7 +19,7 @@ namespace PLC_Connection.StationMonitor
         /// <summary> 搬入コンベアの出口のセンサ部分 </summary>
         public const int OUT_CONVARE_END = 0b0000001000000000;
 
-        private ResultDataCreater[] resultCreaters = new ResultDataCreater[] {
+        private readonly ResultDataCreater[] resultCreaters = new ResultDataCreater[] {
             new VisualInspectionResultCreater_X41(),
             new VisualInspectionResultCreater_X42(),
             new VisualInspectionResultCreater_X43(),
@@ -37,11 +37,13 @@ namespace PLC_Connection.StationMonitor
         {
             if (plcDatas.X00_Block.IsAnyBitStundUp)
             {
-                foreach(var e in plcDatas.X00_Block.ChangedDatas()) {
-                    if(e.bitNumber== 4 && e.IsStundUp)
+                foreach (var e in plcDatas.X00_Block.StandUpDatas())
+                {
+                    if (e.bitNumber == 4)
                     {
                         numberOfWork++;
                         UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_VISUAL_STATION, numberOfWork);
+                        workController.AddnewWork(checkedTime);
                         workController.WriteProcesChangeData(
                             CommonParameters.Process_Number.VisualStation_in, checkedTime);
                     }
@@ -50,10 +52,11 @@ namespace PLC_Connection.StationMonitor
 
             if (plcDatas.X40_Block.IsAnyBitStundUp)
             {
-                List<DataBlock.ChangeBitData> changeData = plcDatas.X40_Block.ChangedDatas();
+                List<DataBlock.ChangeBitData> changeData = plcDatas.X40_Block.StandUpDatas();
+                
                 foreach (var e in changeData)
                 {
-                    if (e.bitNumber == 0 && e.IsStundUp)
+                    if (e.bitNumber == 0)
                     {
                         GetVisualInspectionResult();
                         lastInspectedTime = checkedTime;

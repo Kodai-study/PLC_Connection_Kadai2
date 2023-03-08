@@ -40,9 +40,9 @@ namespace PLC_Connection
 
         public PLC_MonitorTask()
         {
-            MemoryMappedFile share_mem = MemoryMappedFile.CreateNew("shared_memory",4 * (int)MEMORY_SPACE.NUMNER_OF_STATE_KIND);
+            MemoryMappedFile share_mem = MemoryMappedFile.CreateNew("shared_memory", 4 * (int)MEMORY_SPACE.NUMNER_OF_STATE_KIND);
             MemoryMappedViewAccessor accessor = share_mem.CreateViewAccessor();
-            accessor.Write(0, 1);
+            workController = new WorkController();
             visualStationMonitor = new VisualStationMonitor(this, workController, accessor);
             functionStationMonitor = new FunctionStationMonitor(this, workController, accessor, (VisualStationMonitor)visualStationMonitor);
         }
@@ -65,14 +65,18 @@ namespace PLC_Connection
                 return false;
 
 
-            if (!DatabaseController.DBConnection("Data Source=tcp:192.168.96.69,54936;Initial Catalog=Robot22_2DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"))
+          /*  if (!DatabaseController.DBConnection("Data Source=tcp:192.168.96.69,54936;Initial Catalog=Robot22_2DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"))
+            {
+                dotUtlType.Close();
+                return false;
+            }  */
+            if (!DatabaseController.DBConnection())
             {
                 dotUtlType.Close();
                 return false;
             }
 
             this.cancellToken = new CancellationTokenSource();
-            workController = new WorkController();
 
             await Task.Run(() => Run(cancellToken));
             //TODO 処理が正常終了、異常終了の定義をちゃんとする
@@ -90,27 +94,41 @@ namespace PLC_Connection
         /// <see cref="PLC_MonitorTask.cancellToken"/>
         public void Run(CancellationTokenSource token)
         {
-            string label = "Y31";
+            string label = "shine";
             int[] blockData_y41 = new int[4];
             Console.WriteLine("PLCの読み取り開始");
             int testData = 0;
+            workController.AddnewWork(DateTime.Now);
+            workController.WriteProcesChangeData(CommonParameters.Process_Number.VisualStation_in, DateTime.Now);
             //キャンセル要求されるまで無限ループ
             while (!token.IsCancellationRequested)
             {
                 DateTime now = DateTime.Now;
                 dotUtlType.ReadDeviceBlock(ref label, 4, ref blockData_y41);
-               // plcData.Y31_Block.NewBlockData = blockData_y41[0];
-               // plcData.Y33_Block.NewBlockData = blockData_y41[2];
-               // plcData.Y34_Block.NewBlockData = blockData_y41[3];
+                plcData.X00_Block.NewBlockData = blockData_y41[0];
+                // plcData.Y31_Block.NewBlockData = blockData_y41[0];
+                // plcData.Y33_Block.NewBlockData = blockData_y41[2];
+                // plcData.Y34_Block.NewBlockData = blockData_y41[3];
 
-                plcData.X00_Block.NewBlockData = testData;
                 testData++;
+                plcData.Test_Block.NewBlockData = testData;
+                if (plcData.Test_Block.IsAnyBitStundUp)
+                {
+                    var e = plcData.Test_Block.ChangedDatas(2, 3, 4);
+                    if (e.Count > 0)
+                        Thread.Sleep(1);
+                }
+
+
                 label = "visualStation_StateBlock";
                 dotUtlType.ReadDeviceBlock(ref label, 2, ref blockData_y41);
-                plcData.X40_Block.NewBlockData = blockData_y41[0];
-                //visualStationMonitor.CheckData(plcData, now);
+                plcData.B06_Block.NewBlockData = blockData_y41[0];
+                visualStationMonitor.CheckData(plcData, now);
                 //functionStationMonitor.CheckData(plcData, now);
-
+                if (plcData.B06_Block.IsChangeBit)
+                {
+                    Thread.Sleep(10);
+                }
 
                 Thread.Sleep(10);
             }//キャンセルされるまで続くポーリング処理

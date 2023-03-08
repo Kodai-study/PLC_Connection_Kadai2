@@ -36,32 +36,10 @@ namespace PLC_Connection.Modules
         public WorkData(DateTime startTime, CommonParameters.Process_Number progressNum)
         {
             this.progressNum = progressNum;
-            this.startTime = startTime;
+            this.startTime = startTime.AddTicks((startTime.Ticks % TimeSpan.TicksPerSecond) * -1); ;
         }
 
-        public int? CycleCode
-        {
-            //TODO startTimeからCycle_codeをとってくるSQL文を実行
-            get
-            {
-                if (cycle_code != null)
-                    return cycle_code;
 
-                string getCycleCodeSql = String.Format
-                    ("SELECT cycle_code FROM Test_CycleTime WHERE Carry_in BETWEEN '{0}' and '{1}'",
-                    this.startTime, startTime + TimeSpan.FromSeconds(1));
-
-                if (DatabaseController.GetOneParameter(getCycleCodeSql, ref cycle_code))
-                {
-                    return cycle_code;
-                }
-                else
-                {
-                    cycle_code = null;
-                    return cycle_code;
-                }
-            }
-        }
 
         public int? WorkID
         {
@@ -70,12 +48,9 @@ namespace PLC_Connection.Modules
                 if (id != null)
                     return id;
 
-                if (cycle_code == null)
-                {
-                    cycle_code = this.CycleCode;
-                }
                 string getWorkIDSql = String.Format
-                    ("SELECT ID FROM Test_Data WHERE Cycle_Code = {0}", cycle_code);
+                    ("SELECT No FROM SensorTimeT WHERE Supply BETWEEN '{0}' AND '{1}'",
+                    startTime, startTime + TimeSpan.FromSeconds(1));
 
                 if (DatabaseController.GetOneParameter(getWorkIDSql, ref id))
                     return id;

@@ -18,9 +18,14 @@ namespace PLC_Connection.Modules
         {
             set
             {
-                changes = new List<ChangeBitData>();
                 blockData = value;
-                if (oldData== value) return;
+                if (oldData == value)
+                {
+                    changes = null;
+                    return;
+                }
+
+                changes = new List<ChangeBitData>();
                 int checkBit = 1;
                 for (int i = 0; i < BLOCK_SIZE; i++)
                 {
@@ -39,6 +44,7 @@ namespace PLC_Connection.Modules
         {
             get
             {
+                if (changes == null) return false;
                 return changes.Count > 0;
             }
         }
@@ -47,6 +53,7 @@ namespace PLC_Connection.Modules
         {
             get
             {
+                if (changes == null) return false;
                 foreach (var e in changes)
                 {
                     if (e.IsStundUp)
@@ -58,15 +65,27 @@ namespace PLC_Connection.Modules
 
         public List<ChangeBitData> ChangedDatas()
         {
-            List<ChangeBitData> changeBitDataList = new List<ChangeBitData>();
-
-            return changeBitDataList;
+            return changes;
         }
+        public List<ChangeBitData> StandUpDatas()
+        {
+            return changes.FindAll(e =>
+             { return e.IsStundUp; }
+            );
+        }
+        public List<ChangeBitData> StandUpDatas(params int[] filterBits)
+        {
+            return changes.FindAll(e =>
+             { return e.IsStundUp && filterBits.Contains(e.bitNumber); }
+            );
+        }
+
         public List<ChangeBitData> ChangedDatas(params int[] filterBits)
         {
-            List<ChangeBitData> changeBitDataList = new List<ChangeBitData>();
-            changeBitDataList.FindAll(e => { return filterBits.Contains(e.bitNumber); });
-            return changeBitDataList;
+
+            return changes.FindAll(e =>
+                 { return filterBits.Contains(e.bitNumber); }
+            );
         }
 
         public class ChangeBitData

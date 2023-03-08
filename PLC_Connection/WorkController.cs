@@ -59,7 +59,7 @@ namespace PLC_Connection
         public void AddnewWork(DateTime startTime)
         {
             insideWorks.Enqueue(new WorkData(startTime, CommonParameters.Process_Number.Supply));
-            DatabaseController.ExecSQL(String.Format("INSERT INTO SensorTimeT (Supply) VALUES ({0}.{1:D3}))",
+            DatabaseController.ExecSQL(String.Format("INSERT INTO SensorTimeT (Supply) VALUES ('{0}.{1:D3}')",
                 startTime, startTime.Millisecond));
         }
 

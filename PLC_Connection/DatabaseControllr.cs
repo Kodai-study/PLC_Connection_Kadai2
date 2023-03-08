@@ -20,7 +20,7 @@ namespace PLC_Connection
         ///  接続文字列。RBPC12のデータベースに接続するようにしている
         /// </summary>
         private const string DEFAULT_CONNECTION_STR =
-            "Data Source=RBPC12;Initial Catalog=Robot22_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            "Data Source=RBPC12;Initial Catalog=Robot22_2DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
         private static SqlConnection dbConnection;
 
