@@ -1,4 +1,6 @@
-﻿using MITSUBISHI.Component;
+﻿#define debug
+
+using MITSUBISHI.Component;
 using PLC_Connection.Modules;
 using PLC_Connection.StationMonitor;
 using System;
@@ -6,8 +8,10 @@ using System.IO.MemoryMappedFiles;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace PLC_Connection
 {
+
     public class PLC_MonitorTask
     {
 
@@ -63,19 +67,19 @@ namespace PLC_Connection
             };
             if (dotUtlType.Open() != 0)
                 return false;
-
-
-          /*  if (!DatabaseController.DBConnection("Data Source=tcp:192.168.96.69,54936;Initial Catalog=Robot22_2DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"))
+#if debug
+            if (!DatabaseController.DBConnection("Data Source=tcp:192.168.96.69,54936;Initial Catalog=Robot22_2DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"))
             {
                 dotUtlType.Close();
                 return false;
-            }  */
+            }
+#else
             if (!DatabaseController.DBConnection())
             {
                 dotUtlType.Close();
                 return false;
             }
-
+#endif
             this.cancellToken = new CancellationTokenSource();
 
             await Task.Run(() => Run(cancellToken));
