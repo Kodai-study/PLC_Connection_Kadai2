@@ -19,6 +19,7 @@ namespace PLC_Connection.StationMonitor
             FunctionStationMonitor beforeStationMonitor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
             UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_ASSEMBLY_STATION, numberOfWork);
+            UpdateStationState(MEMORY_SPACE.STATE_OF_ASSEMBLY_STATION, 0);
             this.beforeStationMonitor = beforeStationMonitor;
         }
 
@@ -49,6 +50,29 @@ namespace PLC_Connection.StationMonitor
 
                 //ストッカの取り出し等、システム停止が行われたら
                 UpdateStationState(MEMORY_SPACE.IS_SYSTEM_PAUSE, 1);
+            }
+
+            if (plcDatas.B15_Block.IsAnyBitStundUp)
+            {
+                List<DataBlock.ChangeBitData> changeData =
+                    plcDatas.B15_Block.StandUpDatas(0, 1, 3, 4, 10, 11);
+
+                foreach (var e in changeData)
+                {
+                    if (e.BitNumber == 0)
+                    {
+                        UpdateStationState(MEMORY_SPACE.STATE_OF_ASSEMBLY_STATION, 1);
+                    }
+                    if (e.BitNumber == 1)
+                    {
+                        UpdateStationState(MEMORY_SPACE.STATE_OF_ASSEMBLY_STATION, 2);
+                    }
+                    if (e.BitNumber == 4)
+                    {
+                        UpdateStationState(MEMORY_SPACE.STATE_OF_ASSEMBLY_STATION, 4);
+                    }
+
+                }
             }
         }
 

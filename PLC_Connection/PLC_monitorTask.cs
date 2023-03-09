@@ -81,6 +81,7 @@ namespace PLC_Connection
 
             await Task.Run(() => Run(cancellToken));
             //TODO 処理が正常終了、異常終了の定義をちゃんとする
+            
             return false;
         }
 

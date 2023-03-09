@@ -10,6 +10,11 @@ namespace PLC_Connection.StationMonitor
     {
         public SupplyURMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
+            UpdateStationState(MEMORY_SPACE.STATE_OF_SUPPLY_ROBOT, 0);
+            for(int i= 0;i <(int)MEMORY_SPACE.NUMNER_OF_STATE_KIND; i++)
+            {
+                UpdateStationState((MEMORY_SPACE)i, 0);
+            }
         }
 
         override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)

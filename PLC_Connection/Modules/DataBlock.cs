@@ -96,6 +96,7 @@ namespace PLC_Connection.Modules
         }
         public List<ChangeBitData> StandUpDatas(params int[] filterBits)
         {
+            if(changes == null) return null;
             return changes.FindAll(e =>
              { return e.IsStundUp && filterBits.Contains(e.BitNumber); }
             );

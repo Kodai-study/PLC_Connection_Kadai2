@@ -18,11 +18,14 @@ namespace PLC_Connection.StationMonitor
         DateTime? lastInspectedTime = null;
         private readonly TimeSpan delayTime = new TimeSpan(0, 0, 5);
 
+        private int stateNumber = 0;
+
         public FunctionStationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor,
             VisualStationMonitor beforeStationMonitor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
             UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, numberOfWork);
             this.beforeStationMonitor = beforeStationMonitor;
+            UpdateStationState(MEMORY_SPACE.STATE_OF_FUNCTION_STATION, 0);
         }
 
         override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
@@ -65,7 +68,7 @@ namespace PLC_Connection.StationMonitor
                 foreach (var e in changeData)
                 {
                     // 検査終了等のデータを読み取る
-                    if (e.BitNumber == 2)
+                    if (e.BitNumber == 2 && e.IsStundUp)
                     {
                         WorkData checkedWork = workController.GetVisualCheckedWork();
                         if (checkedWork == null)
@@ -78,9 +81,44 @@ namespace PLC_Connection.StationMonitor
                             DatabaseController.ExecSQL(sql);
                         }
                     }
+
+                    if(e.BitNumber == 3 && e.IsStundUp)
+                    {
+                        stateNumber = 1;
+                        UpdateStationState(MEMORY_SPACE.STATE_OF_FUNCTION_STATION, 1);
+                    }
+                    else if(e.BitNumber == 3 && !e.IsStundUp)
+                    {
+                        stateNumber = 0;
+                        UpdateStationState(MEMORY_SPACE.STATE_OF_FUNCTION_STATION, stateNumber);
+                    }
                 }
             }
 
+            if (plcDatas.B0C_Block.IsAnyBitStundUp)
+            {
+                List<DataBlock.ChangeBitData> changeData =
+                    plcDatas.B0C_Block.ChangedDatas(0, 3, 4);
+
+                if(changeData != null && changeData.Count > 0)
+                {
+                    UpdateStationState(plcDatas.B0C_Block.BlockData);
+                }
+            }
+        }
+
+        private void UpdateStationState(int blockData)
+        {
+            if ((blockData & 0x10) != 0)
+                stateNumber = 4;
+            else if ((blockData & 0x08) != 0)
+                stateNumber = 3;
+            else if ((blockData & 0x01) != 0)
+                stateNumber = 2;
+            else
+                stateNumber = 1;
+
+            UpdateStationState(MEMORY_SPACE.STATE_OF_FUNCTION_STATION, stateNumber);
         }
 
         public void GetFunctionalInspectionResult()

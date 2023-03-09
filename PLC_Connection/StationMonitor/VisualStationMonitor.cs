@@ -31,6 +31,7 @@ namespace PLC_Connection.StationMonitor
         public VisualStationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
         {
             UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_VISUAL_STATION, numberOfWork);
+            UpdateStationState(MEMORY_SPACE.STATE_OF_VISUAL_STATION, 0);
         }
 
         override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
@@ -68,32 +69,23 @@ namespace PLC_Connection.StationMonitor
 
             if (plcDatas.B06_Block.IsAnyBitStundUp)
             {
-                List<DataBlock.ChangeBitData> changeData = 
-                    plcDatas.B06_Block.StandUpDatas(0,1,3,4,10,11);
-                int stateNumber = -1;
+                List<DataBlock.ChangeBitData> changeData =
+                    plcDatas.B06_Block.StandUpDatas(0, 1, 3, 4, 10, 11);
+
                 foreach (var e in changeData)
                 {
                     if (e.BitNumber == 0)
                     {
-                        GetVisualInspectionResult();
-                        lastInspectedTime = checkedTime;
-                        UpdateStationState(MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE, 1);
-                    }
-
-                    if (e.BitNumber == 1)
-                    {
-                        UpdateStationState(MEMORY_SPACE.STATE_OF_VISUAL_STATION, 1);
-                    }
-
-                    if (e.BitNumber == 3)
-                    {
                         UpdateStationState(MEMORY_SPACE.STATE_OF_VISUAL_STATION, 2);
                     }
-                    if (e.BitNumber == 4)
+                    if (e.BitNumber == 3)
                     {
                         UpdateStationState(MEMORY_SPACE.STATE_OF_VISUAL_STATION, 3);
                     }
-
+                    if (e.BitNumber == 4)
+                    {
+                        UpdateStationState(MEMORY_SPACE.STATE_OF_VISUAL_STATION, 4);
+                    }
                 }
             }
 

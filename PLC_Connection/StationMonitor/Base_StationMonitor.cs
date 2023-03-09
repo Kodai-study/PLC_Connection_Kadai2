@@ -34,6 +34,7 @@ namespace PLC_Connection.StationMonitor
             writeMemoryStartAddress[(int)MEMORY_SPACE.IS_SYSTEM_PAUSE] = (headAddress += sizeOfInt32);
             writeMemoryStartAddress[(int)MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE] = (headAddress += sizeOfBoolean);
             writeMemoryStartAddress[(int)MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE] = (headAddress += sizeOfBoolean);
+            writeMemoryStartAddress[(int)MEMORY_SPACE.RESULT_VISUAL_INSPECTION] = (headAddress += sizeOfBoolean);
             writeMemoryStartAddress[(int)MEMORY_SPACE.RESULT_FREQUENCY] = (headAddress += sizeOfBoolean);
             writeMemoryStartAddress[(int)MEMORY_SPACE.RESULT_VOLTAGE] = (headAddress += sizeOfInt32);
             writeMemoryStartAddress[(int)MEMORY_SPACE.STATE_OF_OVERALL_SYSTEM] = (headAddress += sizeOfInt32);
