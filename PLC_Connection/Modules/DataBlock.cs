@@ -14,10 +14,25 @@ namespace PLC_Connection.Modules
         private int oldData;
         private List<ChangeBitData> changes;
 
+        private readonly TimeSpan delayTime = new TimeSpan(5000000);
+
+        private readonly DateTime[] lastChangeTimes = new DateTime[BLOCK_SIZE]
+        {
+            DateTime.MinValue, DateTime.MinValue,
+            DateTime.MinValue, DateTime.MinValue,
+            DateTime.MinValue, DateTime.MinValue,
+            DateTime.MinValue, DateTime.MinValue,
+            DateTime.MinValue, DateTime.MinValue,
+            DateTime.MinValue, DateTime.MinValue,
+            DateTime.MinValue, DateTime.MinValue,
+            DateTime.MinValue, DateTime.MinValue
+        };
+
         public int NewBlockData
         {
             set
             {
+                DateTime nowTime = DateTime.Now;
                 blockData = value;
                 if (oldData == value)
                 {
@@ -31,8 +46,14 @@ namespace PLC_Connection.Modules
                 {
                     if ((oldData & checkBit) != (value & checkBit))
                     {
+                        if (nowTime - lastChangeTimes[i] < delayTime)
+                        {
+                            lastChangeTimes[i] = nowTime;
+                            continue;
+                        }
                         changes.Add(new ChangeBitData(i,
                             (value & checkBit) != 0));
+                        lastChangeTimes[i] = nowTime;
                     }
                     checkBit <<= 1;
                 }
@@ -76,25 +97,24 @@ namespace PLC_Connection.Modules
         public List<ChangeBitData> StandUpDatas(params int[] filterBits)
         {
             return changes.FindAll(e =>
-             { return e.IsStundUp && filterBits.Contains(e.bitNumber); }
+             { return e.IsStundUp && filterBits.Contains(e.BitNumber); }
             );
         }
 
         public List<ChangeBitData> ChangedDatas(params int[] filterBits)
         {
-
             return changes.FindAll(e =>
-                 { return filterBits.Contains(e.bitNumber); }
+                 { return filterBits.Contains(e.BitNumber); }
             );
         }
 
         public class ChangeBitData
         {
-            public int bitNumber { get; set; }
+            public int BitNumber { get; set; }
             public bool IsStundUp { get; set; }
             public ChangeBitData(int bitNumber, bool isStundUp)
             {
-                this.bitNumber = bitNumber;
+                this.BitNumber = bitNumber;
                 this.IsStundUp = isStundUp;
             }
         }

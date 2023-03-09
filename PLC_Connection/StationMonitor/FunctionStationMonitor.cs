@@ -33,7 +33,7 @@ namespace PLC_Connection.StationMonitor
                 foreach (var e in changeData)
                 {
                     // 検査終了等のデータを読み取る
-                    if (e.bitNumber == 10)
+                    if (e.BitNumber == 10)
                     {
                         workController.WriteProcesChangeData(CommonParameters.Process_Number.FunctionStation_in, checkedTime);
                         //搬入を検知したら

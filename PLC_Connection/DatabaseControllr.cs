@@ -76,6 +76,7 @@ namespace PLC_Connection
                 return;
             }
             var command = new SqlCommand(sql, dbConnection);
+            Console.WriteLine(sql);
             try
             {
                 command.ExecuteNonQuery();
@@ -115,6 +116,7 @@ namespace PLC_Connection
             {
                 var command = new SqlCommand(sql, dbConnection);
                 sqlData = command.ExecuteReader();
+                Console.WriteLine(sql);
                 if (sqlData.Read())
                 {
                     param = (T)sqlData[0];

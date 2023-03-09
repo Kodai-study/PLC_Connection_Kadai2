@@ -39,7 +39,7 @@ namespace PLC_Connection.StationMonitor
             {
                 foreach (var e in plcDatas.X00_Block.StandUpDatas())
                 {
-                    if (e.bitNumber == 4)
+                    if (e.BitNumber == 4)
                     {
                         numberOfWork++;
                         UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_VISUAL_STATION, numberOfWork);
@@ -47,11 +47,7 @@ namespace PLC_Connection.StationMonitor
                         workController.WriteProcesChangeData(
                             CommonParameters.Process_Number.VisualStation_in, checkedTime);
                     }
-                    if(e.bitNumber == 9)
-                    {
 
-                        GetVisualInspectionResult();
-                    }
                 }
             }
 
@@ -61,7 +57,7 @@ namespace PLC_Connection.StationMonitor
 
                 foreach (var e in changeData)
                 {
-                    if (e.bitNumber == 0)
+                    if (e.BitNumber == 0)
                     {
                         GetVisualInspectionResult();
                         lastInspectedTime = checkedTime;

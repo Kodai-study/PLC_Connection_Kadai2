@@ -19,11 +19,11 @@ namespace PLC_Connection.StationMonitor
                 List<DataBlock.ChangeBitData> changeData = plcDatas.B03_Block.ChangedDatas();
                 foreach (var e in changeData)
                 {
-                    if (e.bitNumber == 2 && e.IsStundUp)
+                    if (e.BitNumber == 2 && e.IsStundUp)
                     {
                         UpdateStationState(MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE, 1);
                     }
-                    else if (e.bitNumber == 1)
+                    else if (e.BitNumber == 1)
                     {
                         //workController.AddnewWork(checkedTime);
                     }
