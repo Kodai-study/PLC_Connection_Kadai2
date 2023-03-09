@@ -18,7 +18,5 @@ namespace PLC_Connection.InspectionResultDataModel
         /// </summary>
         /// <returns> エラーコードのリスト。エラー項目がない場合はnull </returns>
         List<string> GetErrorCodes();
-        //TODO 結果を入出力するアクセサの実装
-        //CHECK_RESULT this[int x] { get;set; }
     }
 }

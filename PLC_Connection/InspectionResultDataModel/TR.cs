@@ -12,8 +12,7 @@ namespace PLC_Connection.InspectionResultDataModel
     {
         private readonly string[] errorCodes = new string[]
         {
-            "TR001",
-            "TR002"
+            "TR00"
         };
         public TR() { }
         public TR(CHECK_RESULT TR_OK)
@@ -36,8 +35,10 @@ namespace PLC_Connection.InspectionResultDataModel
             List<string> errors = null;
             if (TR_OK == CHECK_RESULT.NG)
             {
-                errors = new List<string>();
-                errors.Add(errorCodes[0]);
+                errors = new List<string>
+                {
+                    errorCodes[0]
+                };
             }
             return errors;
         }

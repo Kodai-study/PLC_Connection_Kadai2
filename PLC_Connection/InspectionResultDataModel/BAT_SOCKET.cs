@@ -12,8 +12,8 @@ namespace PLC_Connection.InspectionResultDataModel
     {
         private readonly string[] errorCodes = new string[]
         {
-            "BS001",
-            "BS002"
+            "BS00",
+            "BS01"
         };
         public BAT_SOCKET() { }
         public BAT_SOCKET(CHECK_RESULT SOCKET_DIR)

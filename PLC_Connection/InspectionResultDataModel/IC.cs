@@ -15,12 +15,10 @@ namespace PLC_Connection.InspectionResultDataModel
         /// </summary>
         private readonly string[] errorCodes = new string[]
         {
-            "IC101",
-            "IC102",
-            "IC103",
-            "IC201",
-            "IC202",
-            "IC203"
+            "IC11",
+            "IC12",
+            "IC21",
+            "IC22"
         };
 
         /// <summary>
@@ -66,8 +64,10 @@ namespace PLC_Connection.InspectionResultDataModel
             List<string> errors = null;
             if (IC1_DIR == CHECK_RESULT.NG)
             {
-                errors = new List<string>();
-                errors.Add(errorCodes[0]);
+                errors = new List<string>
+                {
+                    errorCodes[0]
+                };
             }
             if (IC1_OK == CHECK_RESULT.NG)
             {
@@ -79,13 +79,13 @@ namespace PLC_Connection.InspectionResultDataModel
             {
                 if (errors == null)
                     errors = new List<string>();
-                errors.Add(errorCodes[3]);
+                errors.Add(errorCodes[2]);
             }
             if (IC2_OK == CHECK_RESULT.NG)
             {
                 if (errors == null)
                     errors = new List<string>();
-                errors.Add(errorCodes[4]);
+                errors.Add(errorCodes[3]);
             }
             return errors;
         }

@@ -12,22 +12,22 @@ namespace PLC_Connection.InspectionResultDataModel
     {
         private readonly string[] errorCodes = new string[]
         {
-            "DS004",
-            "DS014",
-            "DS024",
-            "DS034",
-            "DS044",
-            "DS054",
-            "DS064",
-            "DS074",
-            "DS084",
-            "DS094",
-            "DS104",
-            "DS114",
-            "DS124",
-            "DS134",
-            "DS144",
-            "DS154"
+            "DS00",
+            "DS01",
+            "DS02",
+            "DS03",
+            "DS04",
+            "DS05",
+            "DS06",
+            "DS07",
+            "DS08",
+            "DS09",
+            "DS10",
+            "DS11",
+            "DS12",
+            "DS13",
+            "DS14",
+            "DS15"
         };
         public DIP_SW() { }
         public DIP_SW(CHECK_RESULT DIP_OK, int DIP_PATTERN)

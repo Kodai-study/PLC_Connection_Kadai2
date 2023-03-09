@@ -12,8 +12,8 @@ namespace PLC_Connection.InspectionResultDataModel
     {
         private readonly string[] errorCodes = new string[]
         {
-            "WK001",
-            "WK002"
+            "WK00",
+            "WK01"
         };
         public WORK() { }
         public WORK(CHECK_RESULT WORK_OK, CHECK_RESULT WORK_DIR)
@@ -40,8 +40,10 @@ namespace PLC_Connection.InspectionResultDataModel
             List<string> errors = null;
             if (WORK_DIR == CHECK_RESULT.NG)
             {
-                errors = new List<string>();
-                errors.Add(errorCodes[0]);
+                errors = new List<string>
+                {
+                    errorCodes[0]
+                };
             }
             if (WORK_OK == CHECK_RESULT.NG)
             {

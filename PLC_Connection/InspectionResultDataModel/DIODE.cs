@@ -12,8 +12,7 @@ namespace PLC_Connection.InspectionResultDataModel
     {
         private readonly string[] errorCodes = new string[]
         {
-             "DI001",
-             "DI002"
+             "DI00"
         };
         public DIODE() { }
         public DIODE(CHECK_RESULT DIODE_DIR)
@@ -36,8 +35,10 @@ namespace PLC_Connection.InspectionResultDataModel
             List<string> errors = null;
             if (DIODE_DIR == CHECK_RESULT.NG)
             {
-                errors = new List<string>();
-                errors.Add(errorCodes[0]);
+                errors = new List<string>
+                {
+                    errorCodes[0]
+                };
             }
             return errors;
         }
