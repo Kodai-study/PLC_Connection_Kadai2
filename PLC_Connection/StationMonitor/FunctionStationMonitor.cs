@@ -16,7 +16,7 @@ namespace PLC_Connection.StationMonitor
         private VisualStationMonitor beforeStationMonitor;
 
         DateTime? lastInspectedTime = null;
-       private readonly TimeSpan delayTime = new TimeSpan(0, 0, 5);
+        private readonly TimeSpan delayTime = new TimeSpan(0, 0, 5);
 
         public FunctionStationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor,
             VisualStationMonitor beforeStationMonitor) : base(plc_MonitorTask, workController, commonMemoryAccessor)
@@ -32,17 +32,17 @@ namespace PLC_Connection.StationMonitor
                 List<DataBlock.ChangeBitData> changeData = plcDatas.B0D_Block.StandUpDatas();
                 foreach (var e in changeData)
                 {
-                    // 検査終了等のデータを読み取る
-                    if (e.BitNumber == 10)
+                    /*if (e.BitNumber == 10)
                     {
                         workController.WriteProcesChangeData(CommonParameters.Process_Number.FunctionStation_in, checkedTime);
                         //搬入を検知したら
                         numberOfWork++;
                         UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, numberOfWork);
                         beforeStationMonitor.RemoveWork();
-                    }
+                    }*/
                 }
-                
+
+
 
                 //状態変化を見れたら
                 int state = 0;
@@ -50,7 +50,7 @@ namespace PLC_Connection.StationMonitor
 
                 //検査終了を検知したら
                 UpdateStationState(MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE, 1);
-                lastInspectedTime   = checkedTime;
+                lastInspectedTime = checkedTime;
             }
 
             if (lastInspectedTime + delayTime < checkedTime)
@@ -58,6 +58,29 @@ namespace PLC_Connection.StationMonitor
                 UpdateStationState(MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE, 0);
                 lastInspectedTime = null;
             }
+
+            if (plcDatas.B0E_Block.IsAnyBitStundUp)
+            {
+                List<DataBlock.ChangeBitData> changeData = plcDatas.B0E_Block.ChangedDatas();
+                foreach (var e in changeData)
+                {
+                    // 検査終了等のデータを読み取る
+                    if (e.BitNumber == 2)
+                    {
+                        WorkData checkedWork = workController.GetVisualCheckedWork();
+                        if (checkedWork == null)
+                            return;
+
+                        if (plc_MonitorTask.GetFunctionInspectionResult(out float resultVoltage, out int resultFrequency))
+                        {
+                            String sql = String.Format("INSERT INTO FunctionalST(No, Volt,Freq) VALUES({0},{1},{2})",
+                                checkedWork.WorkID, resultVoltage, resultFrequency);
+                            DatabaseController.ExecSQL(sql);
+                        }
+                    }
+                }
+            }
+
         }
 
         public void GetFunctionalInspectionResult()

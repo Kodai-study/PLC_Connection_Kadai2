@@ -151,13 +151,13 @@ namespace PLC_Connection
             int buffer = -1;
             int errCode;
             errCode = dotUtlType.GetDevice(ref ContactLabels.functionInspectionVoltage, ref buffer);
-            if (errCode != 0 || buffer == 0)
+            if (errCode != 0)
             {
                 voltage = -1;
                 frequency = -1;
                 return false;
             }
-            voltage = buffer / 1000;
+            voltage = buffer / 1000.0f;
             errCode = dotUtlType.GetDevice(ref ContactLabels.functionInspectionFrequency, ref buffer);
             if (errCode != 0)
             {
