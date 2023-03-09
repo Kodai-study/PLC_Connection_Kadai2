@@ -35,7 +35,6 @@ namespace PLC_Connection
         /// <returns> 接続が成功、もしくはすでに接続済みならTrue </returns>
         public static bool DBConnection()
         {
-
             return DBConnection(DEFAULT_CONNECTION_STR);
         }
 
@@ -81,7 +80,7 @@ namespace PLC_Connection
             {
                 command.ExecuteNonQuery();
             }
-            //TODO 書き込みが失敗したときの処理を考える
+
             catch (Exception)
             {
                 Thread.Sleep(10);
@@ -89,10 +88,9 @@ namespace PLC_Connection
                 {
                     command.ExecuteNonQuery();
                 }
-                //TODO Exceiptionの種類によってエラーログを使い分ける
+
                 catch (Exception exception)
                 {
-                    //TODO 書き込み失敗したときの処理を決めておく エラーログ?
                     Console.WriteLine("書き込み失敗" + exception.ToString());
                 }
             }
@@ -119,10 +117,8 @@ namespace PLC_Connection
                 sqlData = command.ExecuteReader();
                 if (sqlData.Read())
                 {
-                    param = (T)sqlData[0];  //
+                    param = (T)sqlData[0];
                     return !sqlData.Read();//2つ以上のレコード該当する場合は失敗
-                    //TODO レコードが2つ以上該当する、もしくはコラムが2つ以上ある場合は失敗
-                    //return !sqlData.Read() && sqlData.FieldCount != 1; 
                 }
                 else
                 {

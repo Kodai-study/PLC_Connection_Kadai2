@@ -47,13 +47,18 @@ namespace PLC_Connection.StationMonitor
                         workController.WriteProcesChangeData(
                             CommonParameters.Process_Number.VisualStation_in, checkedTime);
                     }
+                    if(e.bitNumber == 9)
+                    {
+
+                        GetVisualInspectionResult();
+                    }
                 }
             }
 
             if (plcDatas.X40_Block.IsAnyBitStundUp)
             {
                 List<DataBlock.ChangeBitData> changeData = plcDatas.X40_Block.StandUpDatas();
-                
+
                 foreach (var e in changeData)
                 {
                     if (e.bitNumber == 0)
@@ -74,7 +79,7 @@ namespace PLC_Connection.StationMonitor
         public void GetVisualInspectionResult()
         {
             Results visualInspectionResult = new Results();
-            int[] resultBlock = plc_MonitorTask.getVisualInspectionResult();
+            int[] resultBlock = plc_MonitorTask.GetVisualInspectionResult();
             for (int i = 0; i < resultBlock.Length; i++)
             {
                 resultCreaters[i].CheckResult(ref visualInspectionResult,
@@ -88,7 +93,7 @@ namespace PLC_Connection.StationMonitor
 
             foreach (var errorCode in visualInspectionResult.getErrorCodes())
             {
-                string insertErrorCodeSql = String.Format("INSERT INTO VisalST (No,result_Code) VALUES ({0},{1})",
+                string insertErrorCodeSql = String.Format("INSERT INTO VisalST (No,result_Code) VALUES ({0},'{1}')",
                   checkedWork.WorkID, errorCode);
                 DatabaseController.ExecSQL(insertErrorCodeSql);
             }

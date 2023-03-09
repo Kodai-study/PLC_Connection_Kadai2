@@ -27,18 +27,22 @@ namespace PLC_Connection.StationMonitor
 
         override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
         {
-            if (plcDatas.X40_Block.IsAnyBitStundUp)
+            if (plcDatas.B0D_Block.IsAnyBitStundUp)
             {
-                List<DataBlock.ChangeBitData> changeData = plcDatas.X40_Block.ChangedDatas();
+                List<DataBlock.ChangeBitData> changeData = plcDatas.B0D_Block.StandUpDatas();
                 foreach (var e in changeData)
                 {
                     // 検査終了等のデータを読み取る
+                    if (e.bitNumber == 10)
+                    {
+                        workController.WriteProcesChangeData(CommonParameters.Process_Number.FunctionStation_in, checkedTime);
+                        //搬入を検知したら
+                        numberOfWork++;
+                        UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, numberOfWork);
+                        beforeStationMonitor.RemoveWork();
+                    }
                 }
-                workController.WriteProcesChangeData(CommonParameters.Process_Number.FunctionStation_in, checkedTime);
-                //搬入を検知したら
-                numberOfWork++;
-                UpdateStationState(MEMORY_SPACE.NUMBER_OF_WORK_FUNCTIONAL_STATION, numberOfWork);
-                beforeStationMonitor.RemoveWork();
+                
 
                 //状態変化を見れたら
                 int state = 0;

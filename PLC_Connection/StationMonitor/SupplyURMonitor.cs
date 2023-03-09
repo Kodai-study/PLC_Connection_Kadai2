@@ -14,9 +14,9 @@ namespace PLC_Connection.StationMonitor
 
         override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
         {
-            if (plcDatas.X40_Block.IsAnyBitStundUp)
+            if (plcDatas.B03_Block.IsAnyBitStundUp)
             {
-                List<DataBlock.ChangeBitData> changeData = plcDatas.X40_Block.ChangedDatas();
+                List<DataBlock.ChangeBitData> changeData = plcDatas.B03_Block.ChangedDatas();
                 foreach (var e in changeData)
                 {
                     if (e.bitNumber == 2 && e.IsStundUp)
@@ -25,7 +25,7 @@ namespace PLC_Connection.StationMonitor
                     }
                     else if (e.bitNumber == 1)
                     {
-                        workController.AddnewWork(checkedTime);
+                        //workController.AddnewWork(checkedTime);
                     }
                 }
             }

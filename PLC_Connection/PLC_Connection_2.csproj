@@ -81,6 +81,7 @@
     <Compile Include="InspectionResultDataModel\RESISTOR.cs" />
     <Compile Include="InspectionResultDataModel\TR.cs" />
     <Compile Include="InspectionResultDataModel\WORK.cs" />
+    <Compile Include="Modules\ContactLabels.cs" />
     <Compile Include="Modules\VisualInspectionResultCreater_X45.cs" />
     <Compile Include="Modules\WorkData.cs" />
     <Compile Include="Modules\VisualInspectionResultCreater_X43.cs" />

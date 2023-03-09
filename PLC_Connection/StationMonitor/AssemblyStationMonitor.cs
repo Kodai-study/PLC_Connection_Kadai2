@@ -24,9 +24,9 @@ namespace PLC_Connection.StationMonitor
 
         override public void CheckData(PLCContactData plcDatas, DateTime checkedTime)
         {
-            if (plcDatas.X40_Block.IsAnyBitStundUp)
+            if (plcDatas.B15_Block.IsAnyBitStundUp)
             {
-                List<DataBlock.ChangeBitData> changeData = plcDatas.X40_Block.ChangedDatas();
+                List<DataBlock.ChangeBitData> changeData = plcDatas.B15_Block.ChangedDatas();
                 foreach (var e in changeData)
                 {
                     //組立工程が終わったら
