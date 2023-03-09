@@ -35,6 +35,9 @@
         /// </summary>
         public static int StepNumbers { get { return TIME_COLUMNAMES.Length; } }
 
+        public const int OPERATION_SYSTEM_START = 0x02;
+        public const int OPERATION_SYSTEM_STOP = 0x00;
+        public const int OPERATION_SYSTEM_CLOCK = 0x01;
     }
 
     public enum MEMORY_SPACE
@@ -54,7 +57,8 @@
         STATE_OF_VISUAL_STATION,
         STATE_OF_FUNCTION_STATION,
         STATE_OF_ASSEMBLY_STATION,
+        INPUT_OPERATION_START,
+        INPUT_OPERATION_STOP,
         NUMNER_OF_STATE_KIND
     }
-
 }

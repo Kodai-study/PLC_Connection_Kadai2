@@ -110,7 +110,7 @@ namespace PLC_Connection
         /// <param name="sql"> SQLのSELECT文。選択するコラムは1つ、WHERE文で1レコードを特定できる </param>
         /// <param name="param"> 取得が成功したら、引数の値を書き換える </param>
         /// <returns> 取得が成功したらTrue </returns>
-        public static bool GetOneParameter<T>(string sql,ref T param)
+        public static bool GetOneParameter<T>(string sql, ref T param)
         {
             SqlDataReader sqlData = null;
             try

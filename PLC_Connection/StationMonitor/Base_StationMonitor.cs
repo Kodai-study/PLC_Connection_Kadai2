@@ -15,7 +15,7 @@ namespace PLC_Connection.StationMonitor
         protected PLC_MonitorTask plc_MonitorTask;
         protected WorkController workController;
         protected MemoryMappedViewAccessor commonMemoryAccessor;
-        private int[] writeMemoryStartAddress = new int[(int)MEMORY_SPACE.NUMNER_OF_STATE_KIND];
+        public int[] writeMemoryStartAddress = new int[(int)MEMORY_SPACE.NUMNER_OF_STATE_KIND];
         protected DateTime checkedTime = DateTime.MinValue;
 
         public Base_StationMonitor(PLC_MonitorTask plc_MonitorTask, WorkController workController, MemoryMappedViewAccessor commonMemoryAccessor)
@@ -41,6 +41,8 @@ namespace PLC_Connection.StationMonitor
             writeMemoryStartAddress[(int)MEMORY_SPACE.STATE_OF_VISUAL_STATION] = (headAddress += sizeOfInt32);
             writeMemoryStartAddress[(int)MEMORY_SPACE.STATE_OF_FUNCTION_STATION] = (headAddress += sizeOfInt32);
             writeMemoryStartAddress[(int)MEMORY_SPACE.STATE_OF_ASSEMBLY_STATION] = (headAddress += sizeOfInt32);
+            writeMemoryStartAddress[(int)MEMORY_SPACE.INPUT_OPERATION_START] = (headAddress += sizeOfInt32);
+            writeMemoryStartAddress[(int)MEMORY_SPACE.INPUT_OPERATION_STOP] = (headAddress += sizeOfBoolean);
         }
 
         public abstract void CheckData(PLCContactData plcDatas, DateTime checkedTime);
@@ -49,7 +51,7 @@ namespace PLC_Connection.StationMonitor
         {
             if (kindOfState == MEMORY_SPACE.IS_SYSTEM_PAUSE ||
                 kindOfState == MEMORY_SPACE.IS_FUNCTION_INSPECTED_JUST_BEFORE || 
-                kindOfState == MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE )
+                kindOfState == MEMORY_SPACE.IS_VISUAL_INSPECTED_JUST_BEFORE)
                 commonMemoryAccessor.Write(writeMemoryStartAddress[(int)kindOfState], value != 0);
             else
                 commonMemoryAccessor.Write(writeMemoryStartAddress[(int)kindOfState], value);

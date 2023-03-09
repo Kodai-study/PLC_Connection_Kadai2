@@ -40,12 +40,13 @@ namespace PLC_Connection
         PLCContactData plcData = new PLCContactData();
         readonly Base_StationMonitor visualStationMonitor;
         readonly Base_StationMonitor functionStationMonitor;
-
+        MemoryMappedFile share_mem;
+        MemoryMappedViewAccessor accessor;
 
         public PLC_MonitorTask()
         {
-            MemoryMappedFile share_mem = MemoryMappedFile.CreateNew("shared_memory", 4 * (int)MEMORY_SPACE.NUMNER_OF_STATE_KIND);
-            MemoryMappedViewAccessor accessor = share_mem.CreateViewAccessor();
+            share_mem = MemoryMappedFile.CreateNew("shared_memory", 4 * (int)MEMORY_SPACE.NUMNER_OF_STATE_KIND);
+            accessor = share_mem.CreateViewAccessor();
             workController = new WorkController();
             visualStationMonitor = new VisualStationMonitor(this, workController, accessor);
             functionStationMonitor = new FunctionStationMonitor(this, workController, accessor, (VisualStationMonitor)visualStationMonitor);
@@ -100,11 +101,15 @@ namespace PLC_Connection
         {
             string label = "shine";
             int[] blockData_y41 = new int[4];
+            int[] operationCode = new int[1];
+            operationCode[0] = 0;
             Console.WriteLine("PLCの読み取り開始");
             int testData = 0;
-            workController.AddnewWork(DateTime.Now);
-            workController.WriteProcesChangeData(CommonParameters.Process_Number.VisualStation_in, DateTime.Now);
+            //  workController.AddnewWork(DateTime.Now);
+            // workController.WriteProcesChangeData(CommonParameters.Process_Number.VisualStation_in, DateTime.Now);
             //キャンセル要求されるまで無限ループ
+            string operationContact = "systemOperation";
+            dotUtlType.WriteDeviceBlock(ref operationContact, 1, operationCode);
             while (!token.IsCancellationRequested)
             {
                 DateTime now = DateTime.Now;
@@ -114,6 +119,7 @@ namespace PLC_Connection
                 // plcData.Y33_Block.NewBlockData = blockData_y41[2];
                 // plcData.Y34_Block.NewBlockData = blockData_y41[3];
 
+                /*
                 testData++;
                 plcData.Test_Block.NewBlockData = testData;
                 if (plcData.Test_Block.IsAnyBitStundUp)
@@ -122,7 +128,7 @@ namespace PLC_Connection
                     if (e.Count > 0)
                         Thread.Sleep(1);
                 }
-
+                */
 
                 label = "visualStation_StateBlock";
                 dotUtlType.ReadDeviceBlock(ref label, 2, ref blockData_y41);
@@ -132,6 +138,31 @@ namespace PLC_Connection
                 if (plcData.B06_Block.IsChangeBit)
                 {
                     Thread.Sleep(10);
+                }
+
+                if (accessor.CanWrite)
+                {
+                    if (accessor.ReadBoolean(visualStationMonitor.writeMemoryStartAddress[
+                        (int)MEMORY_SPACE.INPUT_OPERATION_STOP]))
+                    {
+                        operationCode[0] = CommonParameters.OPERATION_SYSTEM_STOP;
+                        dotUtlType.WriteDeviceBlock(ref operationContact, 1, operationCode);
+                        operationCode[0] = CommonParameters.OPERATION_SYSTEM_STOP | CommonParameters.OPERATION_SYSTEM_CLOCK;
+                        dotUtlType.WriteDeviceBlock(ref operationContact, 1, operationCode);
+                    }
+
+                    else if (accessor.ReadBoolean(visualStationMonitor.writeMemoryStartAddress[
+                        (int)MEMORY_SPACE.INPUT_OPERATION_START]))
+                    {
+                        operationCode[0] = CommonParameters.OPERATION_SYSTEM_START;
+                        dotUtlType.WriteDeviceBlock(ref operationContact, 1, operationCode);
+                        operationCode[0] = CommonParameters.OPERATION_SYSTEM_START | CommonParameters.OPERATION_SYSTEM_CLOCK;
+                        dotUtlType.WriteDeviceBlock(ref operationContact, 1, operationCode);
+                    }
+                    accessor.Write(visualStationMonitor.writeMemoryStartAddress[
+                         (int)MEMORY_SPACE.INPUT_OPERATION_START], false);
+                    accessor.Write(visualStationMonitor.writeMemoryStartAddress[
+                        (int)MEMORY_SPACE.INPUT_OPERATION_STOP], false);
                 }
 
                 Thread.Sleep(10);
